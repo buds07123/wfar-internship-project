@@ -236,6 +236,17 @@ exports.getWfarInfo = async (req,res) => {
     }
 }
 
+exports.getOneWfarInfo = async (req,res) => {
+    try {
+        const id = req.body
+        const wfarId = await wfarModel.findById(id)
+
+        return res.status(200).json({wfarId})
+    } catch (error) {
+        return res.status(404).json({err: "wfarId not found"})
+    }
+}
+
 //logout
 exports.logout = (req,res) => {
     try {
