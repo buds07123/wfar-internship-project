@@ -1,10 +1,11 @@
-import React from "react";
+import React,{useState} from "react";
 import { Link } from "react-router-dom";
 
 import FacultySubmissionCard from "../../Components/FacultySubmissionCard";
 import YearSemSelection from "../../Components/YearSemSelection";
 
 const FacultyOwnSubmissions = () => {
+
   return (
     <React.Fragment>
       {/* Content */}
@@ -38,10 +39,10 @@ const FacultyOwnSubmissions = () => {
           {/* School year, Sem Selection */}
           <YearSemSelection />
           <div className="row">
-            <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6">
+            {/* <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6"> */}
               {/* Submissioncard Component */}
-              <FacultySubmissionCard />
-            </div>
+              {/* <FacultySubmissionCard /> */}
+            {/* </div> */}
             {/* Submissioncard Sample without using the Component */}
             <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6">
               <div className="card">
@@ -52,7 +53,7 @@ const FacultyOwnSubmissions = () => {
                     </div>
                     <div className="wfar-content text-center mt-3">
                       <h4 className="h4">
-                        <Link to="/FacultyIndividualView" className=" text-primary">Week 2</Link>
+                        <Link to="/FacultyIndividualView" className=" text-primary">Week 1</Link>
                       </h4>
                       <h4 className="h4">April 4, 2022 to April 8, 2022</h4>
                       <div className="bootstrap-badge mb-5">
@@ -75,7 +76,7 @@ const FacultyOwnSubmissions = () => {
               </div>
             </div>
             {/* Submissioncard Sample without using the Component */}
-            <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6">
+            {/* <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6">
               <div className="card">
                 <div className="card-body">
                   <div className="wfar-entry">
@@ -105,7 +106,7 @@ const FacultyOwnSubmissions = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

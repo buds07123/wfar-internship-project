@@ -1,6 +1,22 @@
-import React from "react";
+import React, { useState,useEffect } from "react";
+import axios from "axios";
+
+axios.defaults.withCredentials = true
 
 const ProfileSettings = () => {
+
+  const [empData, setempData] = useState('')
+
+  const employeeData = async () => {
+    const res = await axios.get('http://localhost:4000/api/getEmpInfo').catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    employeeData().then((data) => setempData(data.emp))
+  }, [])
+
   return (
     <React.Fragment>
       <div className="col-xl-8">
@@ -119,6 +135,8 @@ const ProfileSettings = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Edit Account Credentials */}
                   <div id="account-settings" className="tab-pane fade">
                     <div className="pt-3">
                       <div className="settings-form">
@@ -178,6 +196,7 @@ const ProfileSettings = () => {
                             </div>
                           </div>
                         </form>
+                        
                         {/* Change Password Modal */}
                         <div className="modal fade" id="changePassword">
                           <div

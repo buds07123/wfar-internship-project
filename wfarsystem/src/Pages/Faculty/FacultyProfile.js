@@ -1,15 +1,32 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
+import axios from "axios";
 
 import Profileoverview from "../../Components/ProfileOverview";
 import ProfileSettings from "../../Components/ProfileSettings";
 
+axios.defaults.withCredentials = true
+
 const FacultyProfile = () => {
-  const [image, setImage] = useState(null);
+  
+
+  const [isSideClicked, setSideClicked] = useState("--");
+
+  const [empData, setempData] = useState('')
+  const [image, setImage] = useState('');
+
+
+  const employeeData = async () => {
+    const res = await axios.get('http://localhost:4000/api/getEmpInfo').catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    employeeData().then((data) => setempData(data.emp))
+  }, [])
 
   const loadImage = (event) => {
-    if (event.target.files && event.target.files[0]) {
-      setImage(URL.createObjectURL(event.target.files[0]));
-    }
+    setImage(URL.createObjectURL(event.target.files[0]));
   };
 
   return (
@@ -44,7 +61,7 @@ const FacultyProfile = () => {
                         <div className="avatar-preview">
                           <div id="imagePreview">
                             <img
-                              src={image === null ? "assets/img/user-sample.png" : image}
+                              src={image === '' ? empData.emp_picture  : image }
                               id="avatar"
                               className="img-fluid rounded-circle"
                             />
@@ -54,8 +71,8 @@ const FacultyProfile = () => {
                     </div>
                     <div className="profile-details">
                       <div className="profile-name px-3 pt-2">
-                        <h4 className="h4 text-primary mb-0">Juan dela Cruz</h4>
-                        <p>Faculty</p>
+                        <h4 className="h4 text-primary mb-0">{empData.fname} {empData.mname} {empData.lname}</h4>
+                        <p>{empData.position}</p>
                       </div>
                       <div className="ml-auto">
                         <button className="btn btn-danger">

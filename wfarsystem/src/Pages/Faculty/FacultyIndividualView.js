@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect, useState} from "react";
 //Bootstrap and jQuery libraries
 import "jquery/dist/jquery.min.js";
 //Datatable Modules
@@ -9,63 +9,127 @@ import Wfarbanner from "../../Components/WfarBanner";
 import Wfarupload from "../../Components/WfarUpload";
 import { render } from "@testing-library/react";
 
-class FacultyIndividualView extends React.Component {
-  componentDidMount() {
-    //initialize datatable
-    $("document").ready(function () {
-      $("#filterTable").dataTable({
-        retrieve: true,
-        paging: true,
-        searching: true,
-        orderCellsTop: true,
-        language: {
-          paginate: {
-            next: '<i class="fa fa-angle-double-right" aria-hidden="true"></i>',
-            previous: '<i class="fa fa-angle-double-left" aria-hidden="true"></i>',
-          },
-        },
-      });
+const FacultyIndividualView = () => {
+  // componentDidMount() {
+  //   //initialize datatable
+  //   $("document").ready(function () {
+  //     $("#filterTable").dataTable({
+  //       retrieve: true,
+  //       paging: true,
+  //       searching: true,
+  //       orderCellsTop: true,
+  //       language: {
+  //         paginate: {
+  //           next: '<i class="fa fa-angle-double-right" aria-hidden="true"></i>',
+  //           previous: '<i class="fa fa-angle-double-left" aria-hidden="true"></i>',
+  //         },
+  //       },
+  //     });
 
-      //Get a reference to the new datatable
-      var table = $("#filterTable").DataTable();
+  //     //Get a reference to the new datatable
+  //     var table = $("#filterTable").DataTable();
 
-      //Take the category filter drop down and append it to the datatables_filter div.
-      //You can use this same idea to move the filter anywhere withing the datatable that you want.
-      $("#filterTable_filter.dataTables_filter").append($("#categoryFilter"));
+  //     //Take the category filter drop down and append it to the datatables_filter div.
+  //     //You can use this same idea to move the filter anywhere withing the datatable that you want.
+  //     $("#filterTable_filter.dataTables_filter").append($("#categoryFilter"));
 
-      //Get the column index for the Category column to be used in the method below ($.fn.dataTable.ext.search.push)
-      //This tells datatables what column to filter on when a user selects a value from the dropdown.
-      //It's important that the text used here (Category) is the same for used in the header of the column to filter
-      var categoryIndex = 4;
-      $("#filterTable th").each(function (i) {
-        if ($($(this)).html() == "Category") {
-          categoryIndex = i;
-          return false;
-        }
-      });
+  //     //Get the column index for the Category column to be used in the method below ($.fn.dataTable.ext.search.push)
+  //     //This tells datatables what column to filter on when a user selects a value from the dropdown.
+  //     //It's important that the text used here (Category) is the same for used in the header of the column to filter
+  //     var categoryIndex = 4;
+  //     $("#filterTable th").each(function (i) {
+  //       if ($($(this)).html() == "Category") {
+  //         categoryIndex = i;
+  //         return false;
+  //       }
+  //     });
 
-      //Use the built in datatables API to filter the existing rows by the Category column
-      $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-        var selectedItem = $("#categoryFilter").val();
-        var category = data[categoryIndex];
-        if (selectedItem === "" || category.includes(selectedItem)) {
-          return true;
-        }
-        return false;
-      });
+  //     //Use the built in datatables API to filter the existing rows by the Category column
+  //     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+  //       var selectedItem = $("#categoryFilter").val();
+  //       var category = data[categoryIndex];
+  //       if (selectedItem === "" || category.includes(selectedItem)) {
+  //         return true;
+  //       }
+  //       return false;
+  //     });
 
-      //Set the change event for the Category Filter dropdown to redraw the datatable each time
-      //a user selects a new filter.
-      $("#categoryFilter").change(function (e) {
-        table.draw();
-      });
+  //     //Set the change event for the Category Filter dropdown to redraw the datatable each time
+  //     //a user selects a new filter.
+  //     $("#categoryFilter").change(function (e) {
+  //       table.draw();
+  //     });
 
-      table.draw();
-    });
-  }
+  //     table.draw();
+  //   });
+  // }
 
-  render() {
-    return (
+  // useEffect(() => {
+  //    //initialize datatable
+  //    $("document").ready(function () {
+  //     $("#filterTable").dataTable({
+  //       retrieve: true,
+  //       paging: true,
+  //       searching: true,
+  //       orderCellsTop: true,
+  //       language: {
+  //         paginate: {
+  //           next: '<i class="fa fa-angle-double-right" aria-hidden="true"></i>',
+  //           previous: '<i class="fa fa-angle-double-left" aria-hidden="true"></i>',
+  //         },
+  //       },
+  //     });
+
+  //     //Get a reference to the new datatable
+  //     var table = $("#filterTable").DataTable();
+
+  //     //Take the category filter drop down and append it to the datatables_filter div.
+  //     //You can use this same idea to move the filter anywhere withing the datatable that you want.
+  //     $("#filterTable_filter.dataTables_filter").append($("#categoryFilter"));
+
+  //     //Get the column index for the Category column to be used in the method below ($.fn.dataTable.ext.search.push)
+  //     //This tells datatables what column to filter on when a user selects a value from the dropdown.
+  //     //It's important that the text used here (Category) is the same for used in the header of the column to filter
+  //     var categoryIndex = 4;
+  //     $("#filterTable th").each(function (i) {
+  //       if ($($(this)).html() == "Category") {
+  //         categoryIndex = i;
+  //         return false;
+  //       }
+  //     });
+
+  //     //Use the built in datatables API to filter the existing rows by the Category column
+  //     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+  //       var selectedItem = $("#categoryFilter").val();
+  //       var category = data[categoryIndex];
+  //       if (selectedItem === "" || category.includes(selectedItem)) {
+  //         return true;
+  //       }
+  //       return false;
+  //     });
+
+  //     //Set the change event for the Category Filter dropdown to redraw the datatable each time
+  //     //a user selects a new filter.
+  //     $("#categoryFilter").change(function (e) {
+  //       table.draw();
+  //     });
+
+  //     table.draw();
+  //   });
+  // },[])
+
+  const [tableData,setTableData] = useState([
+    {name:"nikko",age:"22",ads:"wala"}
+  ])
+
+  const columns = [
+    {title: "Name",field:"name"},
+    {title: "Age",field:"age"},
+    {title: "ads",field:"ads"},
+  ]
+ 
+
+  return (
       <React.Fragment>
         {/* Content */}
         <div className="content-body">
@@ -149,8 +213,10 @@ class FacultyIndividualView extends React.Component {
                           <option value="">Show All</option>
                         </select>
                       </div>
+                      
                       {/* <!-- Set up the datatable --> */}
-                      <form>
+                      
+                      {/* <form>
                         <table
                           id="filterTable"
                           className="table"
@@ -247,149 +313,10 @@ class FacultyIndividualView extends React.Component {
                                 </div>
                               </td>
                             </tr>
-                            <tr>
-                              <td>03/03/2022</td>
-                              <td>CAP 1 - Capstone Project and Research 1</td>
-                              <td>BSIT 3K</td>
-                              <td>24</td>
-                              <td>
-                                <a href="https://bulsumain.sharepoint.com/:v:/s/IT312-BSIT3K/EWku0Ug4rZxHkU1uBjOh6W4Bmi8MY0lxrG1mwhL23ExkAQ?e=Ve2uV">
-                                  <strong>Recording Link</strong>
-                                </a>
-                              </td>
-                              <td>
-                                1. Combined the orientation of IT 312 because there was a
-                                curriculum revision meeting held at the school on their
-                                supposed schedule. 03/02/2022.
-                              </td>
-                              <td>
-                                <div className="dropdown ml-auto text-center">
-                                  <div className="btn-link" data-toggle="dropdown">
-                                    <svg
-                                      width="24px"
-                                      height="24px"
-                                      viewBox="0 0 24 24"
-                                      version="1.1"
-                                    >
-                                      <g
-                                        stroke="none"
-                                        strokeWidth={1}
-                                        fill="none"
-                                        fillRule="evenodd"
-                                      >
-                                        <rect x={0} y={0} width={24} height={24} />
-                                        <circle fill="#000000" cx={5} cy={12} r={2} />
-                                        <circle fill="#000000" cx={12} cy={12} r={2} />
-                                        <circle fill="#000000" cx={19} cy={12} r={2} />
-                                      </g>
-                                    </svg>
-                                  </div>
-                                  <div className="dropdown-menu dropdown-menu-right">
-                                    <a
-                                      className="dropdown-item"
-                                      href="attachment"
-                                      data-toggle="modal"
-                                      data-target="#attachment"
-                                    >
-                                      Team Meet Screenshot
-                                    </a>
-                                    <a
-                                      className="dropdown-item"
-                                      href="attachment"
-                                      data-toggle="modal"
-                                      data-target="#attachment"
-                                    >
-                                      Provided Activities
-                                    </a>
-                                  </div>
-                                </div>
-                              </td>
-                              <td>
-                                <div className="text-center">
-                                  <button
-                                    type="button"
-                                    data-toggle="modal"
-                                    data-target="#editEntry"
-                                    className="btn btn-info btn-xs sharp mr-1"
-                                  >
-                                    <i className="fa fa-edit" />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>03/03/2022</td>
-                              <td>CAP 1 - Capstone Project and Research 1</td>
-                              <td>BSIT 3K</td>
-                              <td>24</td>
-                              <td>
-                                <a href="https://bulsumain.sharepoint.com/:v:/s/IT312-BSIT3K/EWku0Ug4rZxHkU1uBjOh6W4Bmi8MY0lxrG1mwhL23ExkAQ?e=Ve2uV">
-                                  <strong>Recording Link</strong>
-                                </a>
-                              </td>
-                              <td>
-                                1. Combined the orientation of IT 312 because there was a
-                                curriculum revision meeting held at the school on their
-                                supposed schedule. 03/02/2022.
-                              </td>
-                              <td>
-                                <div className="dropdown ml-auto text-center">
-                                  <div className="btn-link" data-toggle="dropdown">
-                                    <svg
-                                      width="24px"
-                                      height="24px"
-                                      viewBox="0 0 24 24"
-                                      version="1.1"
-                                    >
-                                      <g
-                                        stroke="none"
-                                        strokeWidth={1}
-                                        fill="none"
-                                        fillRule="evenodd"
-                                      >
-                                        <rect x={0} y={0} width={24} height={24} />
-                                        <circle fill="#000000" cx={5} cy={12} r={2} />
-                                        <circle fill="#000000" cx={12} cy={12} r={2} />
-                                        <circle fill="#000000" cx={19} cy={12} r={2} />
-                                      </g>
-                                    </svg>
-                                  </div>
-                                  <div className="dropdown-menu dropdown-menu-right">
-                                    <a
-                                      className="dropdown-item"
-                                      href="attachment"
-                                      data-toggle="modal"
-                                      data-target="#attachment"
-                                    >
-                                      Team Meet Screenshot
-                                    </a>
-                                    <a
-                                      className="dropdown-item"
-                                      href="attachment"
-                                      data-toggle="modal"
-                                      data-target="#attachment"
-                                    >
-                                      Provided Activities
-                                    </a>
-                                  </div>
-                                </div>
-                              </td>
-                              <td>
-                                <div className="text-center">
-                                  <button
-                                    type="button"
-                                    data-toggle="modal"
-                                    data-target="#editEntry"
-                                    className="btn btn-info btn-xs sharp mr-1"
-                                  >
-                                    <i className="fa fa-edit" />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
                           </tbody>
                         </table>
-                      </form>
+                      </form> */}
+
                     </div>
                     <div className="col-lg-12">
                       <div className="form-group mt-5">
@@ -539,7 +466,6 @@ class FacultyIndividualView extends React.Component {
         </div>
       </React.Fragment>
     );
-  }
 }
 
 export default FacultyIndividualView;

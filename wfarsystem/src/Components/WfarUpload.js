@@ -1,7 +1,61 @@
-import React from "react";
+import React,{useState} from "react";
 import AttachmentUpload from "./AttachmentUpload";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Wfarupload = () => {
+
+  const navigate = useNavigate()
+
+  const [week_number,setWeek_number] = useState('')
+  const [date,setDate] = useState('')
+  const [subject,setSubject] = useState('')
+  const [course,setCourse] = useState('')
+  const [year,setYear] = useState('')
+  const [section,setSection] = useState('')
+  const [attendee,setAttendee] = useState('')
+  const [recording_link,setRecording_link] = useState('')
+  const [activity,setActivity] = useState('')
+  const [meet_screenshots,setMeet_screenshots] = useState('')
+  const [act_screenshots,setAct_screenshots] = useState('')
+
+  const postWfar = async (e) => {
+    e.preventDefault()
+
+    // const formData = new FormData()
+
+    // formData.set('week_number', week_number)
+    // formData.set('date', date)
+    // formData.set('subject', subject)
+    // formData.set('course', course)
+    // formData.set('year', year)
+    // formData.set('section', section)
+    // formData.set('attendee', attendee)
+    // formData.set('recording_link', recording_link)
+    // formData.set('activity', activity)
+    // formData.set('meet_screenshots', meet_screenshots)
+    // formData.set('act_screenshots', act_screenshots)
+
+    const formData = {
+      week_number,
+      date,
+      subject,
+      course,
+      year,
+      section,
+      attendee,
+      recording_link,
+      activity
+    }
+    
+    await axios.post("http://localhost:4000/api/postWfar",formData)
+    .then(res => {
+      console.log(res)
+      navigate("/FacultyOwnSubmissions")
+    })
+    .catch(err => {console.log(err)})
+  }
+
   return (
     <div>
       <div className="row">
@@ -13,22 +67,15 @@ const Wfarupload = () => {
                   Please complete the WFAR information below.
                 </h4>
               </div>
-              <div className="col-xl-5 col-lg-12">
-                <input
-                  type="button"
-                  className="addEntry float-right btn btn-secondary"
-                  defaultValue="Add Entry"
-                />
-              </div>
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form className="form" action="#" method="post" id="form">
+                <form onSubmit={postWfar} className="form" encType="multipart/form-data" id="form">
                   <div className="form-group row">
                     <label className="col-sm-3 col-form-label">Week No.</label>
                     <div className="col-sm-9">
-                      <select className="form-control default-select form-control-lg">
-                        <option selected disabled hidden>
+                      <select className="form-control default-select form-control-lg" onChange={(e) => setWeek_number(e.target.value)} value={week_number} required>
+                        <option selected disabled>
                           Select a week
                         </option>
                         <option>Week 1</option>
@@ -58,7 +105,7 @@ const Wfarupload = () => {
                         Date of Class/ Accomplishment
                       </label>
                       <div className="col-sm-9">
-                        <input type="date" className="form-control" />
+                        <input type="date" className="form-control" onChange={(e) => setDate(e.target.value)} value={date} required />
                       </div>
                     </div>
                     <div className="form-group row">
@@ -70,6 +117,8 @@ const Wfarupload = () => {
                           type="text"
                           className="form-control input-default "
                           placeholder="Subject"
+                          onChange={(e) => setSubject(e.target.value)} value={subject}
+                          required
                         />
                       </div>
                     </div>
@@ -82,6 +131,8 @@ const Wfarupload = () => {
                           type="text"
                           className="form-control"
                           placeholder="Course"
+                          onChange={(e) => setCourse(e.target.value)} value={course}
+                          required
                         />
                       </div>
                       <div className="col mt-2 mt-sm-0">
@@ -91,6 +142,9 @@ const Wfarupload = () => {
                           max={4}
                           className="form-control input-default "
                           placeholder="Year"
+                          onChange={(e) => setYear(e.target.value)}
+                          value={year}
+                          required
                         />
                       </div>
                       <div className="col mt-2 mt-sm-0">
@@ -98,6 +152,9 @@ const Wfarupload = () => {
                           type="text"
                           className="form-control"
                           placeholder="Section"
+                          onChange={(e) => setSection(e.target.value)}
+                          value={section}
+                          required
                         />
                       </div>
                     </div>
@@ -110,6 +167,9 @@ const Wfarupload = () => {
                           oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
                           className="form-control input-default "
                           placeholder="No. of Attendees"
+                          onChange={(e) => setAttendee(e.target.value)}
+                          value={attendee}
+                          required
                         />
                       </div>
                     </div>
@@ -122,6 +182,9 @@ const Wfarupload = () => {
                           type="text"
                           className="form-control input-default "
                           placeholder="Link of MS Teams Recordings"
+                          onChange={(e) => setRecording_link(e.target.value)}
+                          value={recording_link}
+                          required
                         />
                       </div>
                     </div>
@@ -130,7 +193,7 @@ const Wfarupload = () => {
                         Learning Activities
                       </label>
                       <div className="col-sm-9">
-                        <textarea className="form-control" rows={4} defaultValue={""} />
+                        <textarea className="form-control" rows={4} defaultValue={""} onChange={(e) => setActivity(e.target.value)} value={activity} required/>
                       </div>
                     </div>
                     <div className="form-group row">
@@ -174,13 +237,8 @@ const Wfarupload = () => {
                       <i className="fa fa-cloud-upload" />
                       &nbsp;Save and Upload
                     </button>
-                    <button className="card-link float-right btn btn-success mr-4">
-                      <i className="fa fa-save" />
-                      &nbsp;Save
-                    </button>
                   </div>
                 </form>
-                <form id="copy"></form>
               </div>
             </div>
           </div>

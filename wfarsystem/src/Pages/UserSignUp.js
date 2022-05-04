@@ -1,17 +1,37 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios'
 
 import LandingPageHeader from "../Components/LandingPageHeader";
 
 const UserSignUp = () => {
   //LOAD SELECTED PROFILE PICTURE
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState('');
+  const [imageSignature,setImageSignature] = useState('')
+
+  const [emp_picture, setEmp_picture] = useState('')
+  const [emp_number, setEmp_number] = useState('')
+  const [fname, setFirst_name] = useState('')
+  const [mname, setMiddle_name] = useState('')
+  const [lname, setLast_name] = useState('')
+  const [name_extension, setName_ex] = useState('')
+  const [course, setCourse] = useState('')
+  const [signature, setSignature] = useState('')
+  const [position, setPosition] = useState('')
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [passwordCheck, setPasswordCheck] = useState('')
 
   const loadImage = (event) => {
-    if (event.target.files && event.target.files[0]) {
-      setImage(URL.createObjectURL(event.target.files[0]));
-    }
+    setEmp_picture(event.target.files[0]);
+    setImage(URL.createObjectURL(event.target.files[0]));
   };
+
+  const signaturePic = (event) => {
+    setSignature(event.target.files[0])
+    setImageSignature(URL.createObjectURL(event.target.files[0]))
+  }
 
   //SWITCH TO SIGN IN PAGE
   const [page, setPage] = useState(false);
@@ -26,6 +46,61 @@ const UserSignUp = () => {
   //ENABLE SUBMIT BUTTON
   const [isChecked, setIsChecked] = useState(false);
 
+  const registerEmp = async (e) => {
+    e.preventDefault()
+
+    const formData = new FormData()
+
+    
+    formData.set('emp_picture', emp_picture)
+    formData.set('emp_number', emp_number)
+    formData.set('fname', fname)
+    formData.set('mname', mname)
+    formData.set('lname', lname)
+    formData.set('name_extension', name_extension)
+    formData.set('course', course)
+    formData.set('signature', signature)
+    formData.set('position', position)
+    formData.set('username', username)
+    formData.set('email', email)
+    formData.set('password', password)
+    formData.set('passwordCheck', passwordCheck)
+
+    // const formData = {
+    //     emp_picture,
+    //     emp_number,
+    //     fname,
+    //     mname,
+    //     lname,
+    //     name_extension,
+    //     position,
+    //     username,
+    //     email,
+    //     password,
+    //     passwordCheck
+    // }
+
+    await axios.post("http://localhost:4000/api/register", formData)
+      .then(res => {
+        if (res.data.msg === "Verification email is sent to your email account") {
+          alert('Verification email is sent to your email account.')
+          navigate("/UserSignIn");
+        }
+      })
+      .catch(err => {
+        console.log(err)
+        if (err.response.data.err === "Password must atleast 8 characters") {
+          alert('Password must atleast 8 characters.')
+        } else if (err.response.data.err === "Password must be same for verification") {
+          alert('Password must be same for verification.')
+        } else if (err.response.data.err === 'The username is taken. Try another.') {
+          alert("The username is taken. Try another.")
+        } else if (err.response.data.err === 'The email is taken. Try another.') {
+          alert("The email is taken. Try another.")
+        }
+      })
+  }
+
   return (
     <>
       {/* Content  */}
@@ -36,49 +111,51 @@ const UserSignUp = () => {
         <div className="forms-container">
           <div className="signin-signup">
             {/*SIGN UP*/}
-            <form action="#" className="form sign-up-form">
+            <form onSubmit={registerEmp} className="form sign-up-form">
               <h2 className="title">SIGN UP </h2>
               <p>Fill out the form to give us your account information.</p>
               <div className="profile-pic">
-                <label className="label" for="file">
+                <label className="label" for="profilePhoto">
                   <span className="span">
                     <i className="fa fa-pencil"></i>&nbsp;Add Photo
                   </span>
                 </label>
                 <input
-                  id="file"
+                  id="profilePhoto"
                   type="file"
                   accept=".png, .jpg, .jpeg"
                   onChange={loadImage}
+                  name="emp_picture"
+                  required
                 />
                 <img
-                  src={image === null ? "assets/img/user-sample.png" : image}
+                  src={image === '' ? "assets/img/user-sample.png" : image}
                   id="addprofilephoto"
                 />
               </div>
               <br />
               <div className="input-field">
                 <i className="fa-solid fa-id-card"></i>
-                <input type="text" placeholder="Employee Number" required />
+                <input type="number" onChange={(e) => setEmp_number(e.target.value)} value={emp_number} placeholder="Employee Number" required />
               </div>
               <div className="input-field">
                 <i className="fas fa-user"></i>
-                <input type="text" placeholder="First Name" required />
+                <input type="text" onChange={(e) => setFirst_name(e.target.value)} value={fname} placeholder="First Name" required />
               </div>
               <div className="input-field">
                 <i className="fas fa-user"></i>
-                <input type="text" placeholder="Middle Name (Not required)" />
+                <input type="text" onChange={(e) => setMiddle_name(e.target.value)} value={mname} placeholder="Middle Name (Not required)" />
               </div>
               <div className="input-field">
                 <i className="fas fa-user"></i>
-                <input type="text" placeholder="Last Name" required />
+                <input type="text" onChange={(e) => setLast_name(e.target.value)} value={lname} placeholder="Last Name" required />
               </div>
               <div className="input-field">
                 <i className="fas fa-user"></i>
-                <input type="text" placeholder="Name Extension (Not required)" />
+                <input type="text" onChange={(e) => setName_ex(e.target.value)} value={name_extension} placeholder="Name Extension (Not required)" />
               </div>
               <div class="select">
-                <select class="select textIndent" name="position" id="position">
+                <select class="select textIndent" name="position" id="position" onChange={(e) => setPosition(e.target.value)} value={position} required>
                   <option selected disabled hidden>
                     &#xf2c1; &nbsp;&nbsp; Select your Position
                   </option>
@@ -90,7 +167,7 @@ const UserSignUp = () => {
                 </select>
               </div>
               <div class="select">
-                <select class="select textIndent" name="position" id="position">
+                <select class="select textIndent" name="course" id="course" onChange={(e) => setCourse(e.target.value)} value={course} required>
                   <option selected disabled hidden>
                     &#xf2c1; &nbsp;&nbsp; Select your Department
                   </option>
@@ -109,29 +186,30 @@ const UserSignUp = () => {
                   id="file"
                   type="file"
                   accept=".png, .jpg, .jpeg"
-                  onChange={loadImage}
+                  onChange={signaturePic}
+                  name="signature"
+                  required
                 />
-
                 <img
-                  src={image === null ? "assets/img/signature.png" : image}
-                  id="addprofilephoto"
+                  src={imageSignature === '' ? "assets/img/signature.png" : imageSignature}
+                  id="addsignaturephoto"
                 />
               </div>
               <div class="input-field">
                 <i class="fas fa-user-circle"></i>
-                <input type="text" placeholder="Username" required />
+                <input type="text" onChange={(e) => setUsername(e.target.value)} value={username} placeholder="Username" required />
               </div>
               <div className="input-field">
                 <i className="fas fa-envelope"></i>
-                <input type="email" placeholder="Email address" required />
+                <input type="email" onChange={(e) => setEmail(e.target.value)} value={email} placeholder="Email address" required />
               </div>
               <div className="input-field">
                 <i className="fas fa-lock"></i>
-                <input type="password" placeholder="Password" required />
+                <input type="password" onChange={(e) => setPassword(e.target.value)} value={password} placeholder="Password" required />
               </div>
               <div className="input-field">
                 <i className="fas fa-lock"></i>
-                <input type="password" placeholder="Confirm Password" required />
+                <input type="password" onChange={(e) => setPasswordCheck(e.target.value)} value={passwordCheck} placeholder="Confirm Password" required />
               </div>
               <label class="signup_span">
                 <input

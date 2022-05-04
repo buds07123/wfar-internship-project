@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { NavLink } from "react-router-dom";
+import axios from 'axios';
+
+axios.defaults.withCredentials = true
 
 const FacultySidebar = () => {
   // CHANGE HIGHLIGHTED BUTTON ON SIDEBAR
   const [isSideClicked, setSideClicked] = useState("--");
+
+  const [empData, setempData] = useState('')
+
+  const employeeData = async () => {
+    const res = await axios.get('http://localhost:4000/api/getEmpInfo').catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    employeeData().then((data) => setempData(data.emp))
+  }, [])
 
   return (
     <React.Fragment>
@@ -12,13 +27,13 @@ const FacultySidebar = () => {
         <div className="deznav-scroll">
           <div className="main-profile">
             <div className="image-bx">
-              <img src="assets/img/user-sample.png" alt />
+              <img src={empData.emp_picture} alt />
               <NavLink exact to="/FacultyProfile">
                 <i className="fa fa-cog" aria-hidden="true" />
               </NavLink>
             </div>
             <h5 className="h5 name">
-              <span className="font-w400">Hello,</span> Cruz
+              <span className="font-w400">Hello,</span> {empData.lname}
             </h5>
           </div>
           <ul className="metismenu" id="menu">

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import axios from 'axios'
 import LandingPageHeader from "../Components/LandingPageHeader";
 
 const UserSignIn = () => {
@@ -14,6 +14,33 @@ const UserSignIn = () => {
     }, 1000);
   }
 
+  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+
+  const loginEmp = async (e) => {
+    e.preventDefault()
+
+    try {
+        const loginData = {
+            email,
+            password
+        }
+    
+        await axios.post("http://localhost:4000/api/login",loginData)
+        window.location.href = '/Faculty'
+    } catch (error) {
+        console.log(error)
+        if(error.response.data.err === "invalid password"){
+            alert('Invalid Password.')
+        }else if(error.response.data.err === "The email or username is not existing"){
+            alert('The email or username is not existing.')
+        }else if(error.response.data.err === "Verify your account first in your email account"){
+            alert('Verify your account first in your email account.')
+        }
+    }
+}
+
   return (
     <>
       {/* Content  */}
@@ -21,7 +48,7 @@ const UserSignIn = () => {
         <div className="forms-container">
           <div className="signin-signup" style={{ marginTop: "-3%" }}>
             {/* SIGN IN */}
-            <form action="#" className="form sign-in-form">
+            <form onSubmit={loginEmp} className="form sign-in-form">
               <h2 className="title">SIGN IN </h2>
               <p>
                 Welcome back, Instructors! <i className="fa-solid fa-hand"></i>
@@ -29,24 +56,23 @@ const UserSignIn = () => {
               </p>
               <div className="input-field">
                 <i className="fas fa-envelope"></i>
-                <input type="email" placeholder="Username or Email address" required />
+                <input type="email" onChange={(e) => setEmail(e.target.value)} value={email} placeholder="Username or Email address" required />
               </div>
               <div className="input-field">
                 <i className="fas fa-lock"></i>
-                <input type="password" placeholder="Password" required />
+                <input type="password" onChange={(e) => setPassword(e.target.value)} value={password} placeholder="Password" required />
               </div>
-              <div className="error badge light badge-danger">
+              {/* <div className="error badge light badge-danger">
                 <p><strong>ERROR:</strong> Invalid sign-in credentials. </p>
                 <p>Attemps remaining: <strong>3</strong></p>
-              </div>
-              <span className="span">
+              </div> */}
+              {/* <span className="span">
                 <a href="forgotPassword" data-toggle="modal" data-target="#forgotPassword">
                   Forgot Password?
                 </a>
-              </span>
+              </span> */}
               <input
-                type="button"
-                name="login"
+                type="submit"
                 value="Sign In"
                 className="btn-lpage btn-start"
               />

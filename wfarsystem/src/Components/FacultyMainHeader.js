@@ -1,7 +1,27 @@
-import React from "react";
+import React, { useState,useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from 'axios';
+axios.defaults.withCredentials = true
 
 const FacultyMainHeader = () => {
+
+  const [empData, setempData] = useState('')
+
+  const employeeData = async () => {
+    const res = await axios.get('http://localhost:4000/api/getEmpInfo').catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    employeeData().then((data) => setempData(data.emp))
+  }, [])
+
+  const logoutButton = async () => {
+    await axios.post('http://localhost:4000/api/logout')
+    window.location.href = '/UserSignIn'
+  }
+
   return (
     <React.Fragment>
       {/* Header */}
@@ -94,10 +114,10 @@ const FacultyMainHeader = () => {
             </li>
             <li className="nav-item dropdown header-profile">
               <a className="nav-link" href="#" role="button" data-toggle="dropdown">
-                <img src="assets/img/user-sample.png" width={20} alt />
+                <img src={empData.emp_picture} width={20} alt />
                 <div className="header-info">
-                  <span>Juan dela Cruz</span>
-                  <small>Faculty</small>
+                  <span>{empData.fname} {empData.mname} {empData.lname}</span>
+                  <small>{empData.position}</small>
                 </div>
               </a>
               <div className="dropdown-menu dropdown-menu-right">
@@ -120,7 +140,7 @@ const FacultyMainHeader = () => {
                   </svg>
                   <span className="ml-2">Profile </span>
                 </Link>
-                <Link to="javascript:void(0);" className="dropdown-item ai-icon">
+                <button onClick={logoutButton} className="dropdown-item ai-icon">
                   <svg
                     id="icon-logout"
                     xmlns="http://www.w3.org/2000/svg"
@@ -139,7 +159,7 @@ const FacultyMainHeader = () => {
                     <line x1={21} y1={12} x2={9} y2={12} />
                   </svg>
                   <span className="ml-2">Logout </span>
-                </Link>
+                </button>
               </div>
             </li>
           </ul>
