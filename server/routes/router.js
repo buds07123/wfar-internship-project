@@ -20,10 +20,11 @@ const upload = require('../cloudinary/multer')
 
 //ROUTES
 // router.get('/refresh',refreshToken,verifyToken,controller.getEmpInfo)
-router.post('/register', upload.single("emp_picture") , controller.register)
+router.post('/register', upload.fields([{name: "emp_picture"}, {name: "signature"}]) , controller.register)
 router.get('/verify_email/:id/:token', controller.verify_email)
 router.post('/login', controller.login)
-router.get('/getEmpInfo', verifyToken ,controller.getEmpInfo)      
+router.get('/getEmpInfo', verifyToken ,controller.getEmpInfo)  
+router.post('/postWfar', verifyToken, controller.postWfar )    
 router.post('/logout',controller.logout)      
 
 module.exports = router

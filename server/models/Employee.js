@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const employeeSchema = new mongoose.Schema({
     emp_picture: { 
         type: String,
-        required: true
+        required: false
     },
     emp_number: { 
         type: String,
@@ -22,6 +22,14 @@ const employeeSchema = new mongoose.Schema({
         required: true
     },
     name_extension: { 
+        type: String,
+        required: false
+    },
+    course: { 
+        type: String,
+        required: true
+    },
+    signature: { 
         type: String,
         required: false
     },
@@ -46,7 +54,7 @@ const employeeSchema = new mongoose.Schema({
     password: { 
         type: String,
         required: true
-    }
+    },
 })
 
 module.exports = employee = mongoose.model('employee',employeeSchema)

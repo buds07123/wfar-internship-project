@@ -6,6 +6,7 @@ const crypto = require('crypto')
 //models
 const employeeModel = require('../models/Employee')
 const emailTokenModel = require('../models/EmailToken')
+const wfarModel = require('../models/Wfar')
 
 //upload picture
 const cloudinary = require('../cloudinary/cloudinary')
@@ -13,8 +14,10 @@ const cloudinary = require('../cloudinary/cloudinary')
 //reqistration
 exports.register = async (req,res) => { 
     try {
-        const picture = await cloudinary.uploader.upload(req.file.path)
-        const {emp_number,fname,mname,lname,name_extension,position,username,email,password,passwordCheck} = req.body
+        //data
+        const profilePic = await cloudinary.uploader.upload(req.files['emp_picture'][0].path) 
+        const signaturePic = await cloudinary.uploader.upload(req.files['signature'][0].path)
+        const {emp_number,fname,mname,lname,name_extension,course,position,username,email,password,passwordCheck} = req.body
 
         //checking username exists
         const existUsername = await employeeModel.findOne({ username: req.body.username });
@@ -51,12 +54,14 @@ exports.register = async (req,res) => {
 
         //schema
         const newEmployee = await new employeeModel({
-            emp_picture: picture.secure_url,
+            emp_picture: profilePic.secure_url,
             emp_number,
             fname,
             mname,
             lname,
             name_extension,
+            course,
+            signature: signaturePic.secure_url,
             position,
             username,
             email,
@@ -190,34 +195,55 @@ exports.getEmpInfo = async (req,res) => {
     return res.status(200).json({emp})
 }
 
+exports.postWfar = async (req,res) => {
+    try {
+        const emp_id = req.id
+        const {week_number,date,subject,course,year,section,attendee,recording_link,activity,meet_screenshots,act_screenshots} = req.body
+        
+        //employee id
+        id = await employeeModel.findById(emp_id)
+
+        //save new wfar
+        await new wfarModel({
+            empId: id,
+            week_number,
+            date,
+            subject,
+            course,
+            year,
+            section,
+            attendee,
+            recording_link,
+            activity,
+            meet_screenshots,
+            act_screenshots
+        }).save()
+
+        return res.status(200).json({msg: "Post Wfar Successfully"})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 //logout
 exports.logout = (req,res) => {
-    // const token = req.cookies.token
+    try {
+        const token = req.cookies.token
 
-    // if (!token) {
-    //     return res.status(401).json({ err: "No token found" })
-    // }
+        if (!token) {
+            return res.status(401).json({ err: "No token found" })
+        }
 
-    // const employee = jwt.verify(token, process.env.JWT_SECRET)
+        // res.cookie(token, "", {
+        //     httpOnly: true,
+        //     expires: new Date(0)
+        // })
 
-    // //clear token
-    // res.clearCookie(`${employee.id}`)
-    // req.cookies[`${employee.id}`] = ""
+        //cliearTokenFromCookie
+        res.clearCookie('token')
 
-    // try {
-    //     const token = req.cookies.token
-
-    //     if (!token) {
-    //         return res.status(401).json({ err: "No token found" })
-    //     }
-
-    //     res.cookie(String(employee._id), "", {
-    //         httpOnly: true,
-    //         expires: new Date(0)
-    //     })
-
-    //     return res.status(200).json({ msg: "Successfully Log out" })
-    // } catch (error) {
-    //     console.log(error)
-    // }
+        return res.status(200).json({ msg: "Successfully Log out" })
+    } catch (error) {
+        console.log(error)
+    }
 }
