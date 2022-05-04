@@ -25,6 +25,7 @@ router.get('/verify_email/:id/:token', controller.verify_email)
 router.post('/login', controller.login)
 router.get('/getEmpInfo', verifyToken ,controller.getEmpInfo)  
 router.post('/postWfar', verifyToken, controller.postWfar )    
+router.get('/getWfarInfo', verifyToken, controller.getWfarInfo)
 router.post('/logout',controller.logout)      
 
 module.exports = router

@@ -225,6 +225,17 @@ exports.postWfar = async (req,res) => {
     }
 }
 
+exports.getWfarInfo = async (req,res) => {
+    const emp_id = req.id
+    try {
+        const empId = await wfarModel.find({empId: emp_id})
+
+        return res.status(200).json({empId})
+    } catch (error) {
+        return res.status(404).json({err: "Employee id not found"})
+    }
+}
+
 //logout
 exports.logout = (req,res) => {
     try {

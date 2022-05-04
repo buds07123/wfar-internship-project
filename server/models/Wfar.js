@@ -49,7 +49,11 @@ const wfarSchema = new mongoose.Schema({
     act_screenshots: [{ 
         type: String,
         required: false
-    }]
+    }],
+    isActive: {
+        type: Boolean,
+        default: true
+    }
 })
 
 module.exports = wfar = mongoose.model('wfar', wfarSchema)

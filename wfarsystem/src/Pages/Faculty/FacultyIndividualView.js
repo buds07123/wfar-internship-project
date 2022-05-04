@@ -4,10 +4,14 @@ import "jquery/dist/jquery.min.js";
 //Datatable Modules
 import "datatables.net-dt/js/dataTables.dataTables";
 import $ from "jquery";
+import MUIDataTable from 'mui-datatables'
+
 
 import Wfarbanner from "../../Components/WfarBanner";
 import Wfarupload from "../../Components/WfarUpload";
 import { render } from "@testing-library/react";
+import axios from "axios";
+axios.defaults.withCredentials = true
 
 const FacultyIndividualView = () => {
   // componentDidMount() {
@@ -118,16 +122,74 @@ const FacultyIndividualView = () => {
   //   });
   // },[])
 
-  const [tableData,setTableData] = useState([
-    {name:"nikko",age:"22",ads:"wala"}
-  ])
+  const [tableData,setTableData] = useState([])
 
-  const columns = [
-    {title: "Name",field:"name"},
-    {title: "Age",field:"age"},
-    {title: "ads",field:"ads"},
-  ]
+  const getData = async () => {
+    const res = await axios.get('http://localhost:4000/api/getWfarInfo')
+    .catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    getData().then((data) => setTableData(data.empId))
+  },[])
  
+  const columns = [
+    {
+      name: "date",
+      label: "Date"
+    },
+    {
+      name: "subject",
+      label: "Subject"
+    },
+    {
+      name: "course",
+      label: "Course"
+    },
+    {
+      name: "attendee",
+      label: "No. of Attendees"
+    },
+    {
+      name: "recording_link",
+      label: "Link of Meet Recording"
+    },
+    {
+      name: "activity",
+      label: "Learning Activities"
+    },
+    {
+      name: "meet_screenshots",
+      label: "Attachments"
+    },
+    {
+      name: "Actions",
+      label: "Actions",
+      options: {
+        customBodyRenderLite: (dataIndex, rowIndex) => {
+          return (
+            <div className="text-center">
+              <button
+                onClick={e => alert(tableData[rowIndex]._id)}
+                type="button"
+                data-toggle="modal"
+                data-target="#editEntry"
+                className="btn btn-info btn-xs sharp mr-1"
+              >  
+                <i className="fa fa-edit" />
+              </button>
+            </div>
+          )
+        }
+      }
+    }
+  ]
+
+  const options = {
+    filterType: 'checkbox',
+  };
 
   return (
       <React.Fragment>
@@ -215,8 +277,8 @@ const FacultyIndividualView = () => {
                       </div>
                       
                       {/* <!-- Set up the datatable --> */}
-                      
-                      {/* <form>
+                      <MUIDataTable columns={columns} data={tableData} options={options} />
+                      {/* 
                         <table
                           id="filterTable"
                           className="table"
@@ -315,7 +377,7 @@ const FacultyIndividualView = () => {
                             </tr>
                           </tbody>
                         </table>
-                      </form> */}
+                       */}
 
                     </div>
                     <div className="col-lg-12">
