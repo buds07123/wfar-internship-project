@@ -1,6 +1,6 @@
 import React from "react";
 
-const YearSemSelection = () => {
+const YearSemSelection = ({setYear,setSem}) => {
   return (
     <React.Fragment>
       <div className="row page-titles mx-0 mt-4 bg-white p-3">
@@ -15,12 +15,12 @@ const YearSemSelection = () => {
                   <div className="input-group-prepend">
                     <label className="input-group-text">School Year</label>
                   </div>
-                  <select className="form-control default-select form-control-lg">
+                  <select className="form-control default-select form-control-lg" onChange={e => setYear(e.target.value)}>
                     <option selected disabled hidden>
                       Select year
                     </option>
-                    <option value={1}>2021-2022</option>
-                    <option value={2}>2020-2021</option>
+                    <option value="2021-2022">2021-2022</option>
+                    <option value="2020-2021">2020-2021</option>
                   </select>
                 </div>
               </form>
@@ -35,12 +35,12 @@ const YearSemSelection = () => {
                   <div className="input-group-prepend">
                     <label className="input-group-text">Semester</label>
                   </div>
-                  <select className="form-control default-select form-control-lg">
+                  <select className="form-control default-select form-control-lg" onChange={e => setSem(e.target.value)}>
                     <option selected disabled hidden>
                       Select sem
                     </option>
-                    <option value={1}>First Semester</option>
-                    <option value={2}>Second Semester</option>
+                    <option value="First Semester">First Semester</option>
+                    <option value="Second Semester">Second Semester</option>
                   </select>
                 </div>
               </form>

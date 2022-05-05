@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AttachmentUpload from "../../Components/AttachmentUpload"
 
 //Bootstrap and jQuery libraries
@@ -8,7 +8,7 @@ import "jquery/dist/jquery.min.js";
 import "datatables.net-dt/js/dataTables.dataTables";
 import $ from "jquery";
 import MUIDataTable from 'mui-datatables'
-import { useTable,useSortBy } from 'react-table'
+import { useTable, useSortBy, useGlobalFilter, usePagination } from 'react-table'
 
 import Wfarbanner from "../../Components/WfarBanner";
 import Wfarupload from "../../Components/WfarUpload";
@@ -127,7 +127,22 @@ const FacultyIndividualView = () => {
 
   const navigate = useNavigate()
 
+  const [updateTable, setUpdateTable] = useState(0)
+  const [tableData, setTableData] = useState([])
+
+  const getData = async () => {
+    const res = await axios.get('http://localhost:4000/api/getWfarInfo')
+      .catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    getData().then((data) => setTableData(data.empId))
+  }, [updateTable])
+
   //Edit Wfar
+  const [_id, setID] = useState('')
   const [week_number, setWeek_number] = useState('')
   const [date, setDate] = useState('')
   const [subject, setSubject] = useState('')
@@ -140,131 +155,207 @@ const FacultyIndividualView = () => {
   const [meet_screenshots, setMeet_screenshots] = useState('')
   const [act_screenshots, setAct_screenshots] = useState('')
 
-  // const columns = [
-  //   {
-  //     name: "date",
-  //     label: "Date"
-  //   },
-  //   {
-  //     name: "subject",
-  //     label: "Subject"
-  //   },
-  //   {
-  //     name: "course",
-  //     label: "Course"
-  //   },
-  //   {
-  //     name: "attendee",
-  //     label: "No. of Attendees"
-  //   },
-  //   {
-  //     name: "recording_link",
-  //     label: "Link of Meet Recording"
-  //   },
-  //   {
-  //     name: "activity",
-  //     label: "Learning Activities"
-  //   },
-  //   {
-  //     name: "meet_screenshots",
-  //     label: "Attachments"
-  //   },
-  //   {
-  //     name: "Actions",
-  //     label: "Actions",
-  //     options: {
-  //       customBodyRenderLite: (dataIndex, rowIndex) => {
-  //         return (
-  //           <div className="text-center">
-  //             <button
-  //               onClick={e => {
-  //                 alert(tableData[rowIndex]._id)
-  //               }}
-  //               data-id={tableData[rowIndex]._id}
-  //               type="button"
-  //               data-toggle="modal"
-  //               data-target="#editEntry"
-  //               className="btn btn-info btn-xs sharp mr-1"
-  //             >
-  //               <i className="fa fa-edit" />
-  //             </button>
-  //           </div>
-  //         )
-  //       }
-  //     }
-  //   }
-  // ]
+  const updateData = async (e) => {
+    e.preventDefault()
 
-  // const options = {
-  //   filterType: 'checkbox',
-  // };
+    const formData = {
+      week_number,
+      date,
+      subject,
+      course,
+      year,
+      section,
+      attendee,
+      recording_link,
+      activity
+    }
 
-  const [tableData, setTableData] = useState([])
-
-  const getData = async () => {
-    const res = await axios.get('http://localhost:4000/api/getWfarInfo')
-      .catch(err => console.log(err))
-
-    return res.data
+    await axios.put(`http://localhost:4000/api/updateOneWfarInfo/${_id}`,formData)
+      .then(res => {
+        if (res.data.msg === "Wfar Successfully Updated") {
+          alert('Wfar Successfully Updated.')
+          setUpdateTable(updateTable + 1)
+        }
+      })
+      .catch(err => {
+        alert('failed')
+        console.log(err)
+      })
   }
 
-  useEffect(() => {
-    getData().then((data) => setTableData(data.empId))
-  }, [])
-
-  const data = useMemo(() => tableData)
-  const columns = useMemo(
-    () => [
-      {
-        Header: 'Date',
-        accessor: 'date', // accessor is the "key" in the data
-      },
-      {
-        Header: 'Subject',
-        accessor: 'subject',
-      },
-      {
-        Header: 'Course',
-        accessor: 'course',
-      },
-      {
-        Header: 'Year',
-        accessor: 'year',
-      },
-      {
-        Header: 'Section',
-        accessor: 'section',
-      },
-      {
-        Header: 'No. of Attendees',
-        accessor: 'attendee',
-      },
-      {
-        Header: "Link of Meet Recording",
-        accessor: "recording_link"
-      },
-      {
-        Header: 'Learning Activities',
-        accessor: 'activity',
-      },
-      {
-        Header: 'Action',
-        accessor: 'Action',
+  const columns = [
+    {
+      name: "date",
+      label: "Date"
+    },
+    {
+      name: "subject",
+      label: "Subject"
+    },
+    {
+      name: "course",
+      label: "Course",
+    },
+    {
+      name: "attendee",
+      label: "No. of Attendees"
+    },
+    {
+      name: "recording_link",
+      label: "Link of Meet Recording"
+    },
+    {
+      name: "activity",
+      label: "Learning Activities"
+    },
+    {
+      name: "Attachments",
+      label: "Attachments",
+      options:{
+        customBodyRenderLite: (dataIndex, rowIndex) => {
+          return (
+            <div className="dropdown ml-auto text-center">
+              <div className="btn-link" data-toggle="dropdown">
+                <svg
+                  width="24px"
+                  height="24px"
+                  viewBox="0 0 24 24"
+                  version="1.1"
+                >
+                  <g
+                    stroke="none"
+                    strokeWidth={1}
+                    fill="none"
+                    fillRule="evenodd"
+                  >
+                    <rect x={0} y={0} width={24} height={24} />
+                    <circle fill="#000000" cx={5} cy={12} r={2} />
+                    <circle fill="#000000" cx={12} cy={12} r={2} />
+                    <circle fill="#000000" cx={19} cy={12} r={2} />
+                  </g>
+                </svg>
+              </div>
+              <div className="dropdown-menu dropdown-menu-right">
+                <a
+                  className="dropdown-item"
+                  href="attachment"
+                  data-toggle="modal"
+                  data-target="#attachment"
+                >
+                  Team Meet Screenshot
+                </a>
+                <a
+                  className="dropdown-item"
+                  href="attachment"
+                  data-toggle="modal"
+                  data-target="#attachment"
+                >
+                  Provided Activities
+                </a>
+              </div>
+            </div>
+          )
+        }
       }
-    ],
-    []
-  )
+    },
+    {
+      name: "Actions",
+      label: "Actions",
+      options: {
+        customBodyRenderLite: (dataIndex, rowIndex) => {
+          return (
+            <div className="text-center">
+              <button
+                onClick={e => {
+                  setID(tableData[dataIndex]._id)
+                  setWeek_number(tableData[dataIndex].week_number)
+                  setDate(tableData[dataIndex].date)
+                  setSubject(tableData[dataIndex].subject)
+                  setCourse(tableData[dataIndex].course)
+                  setYear(tableData[dataIndex].year)
+                  setSection(tableData[dataIndex].section)
+                  setAttendee(tableData[dataIndex].attendee)
+                  setRecording_link(tableData[dataIndex].recording_link)
+                  setActivity(tableData[dataIndex].activity)
+                }}
+                type="button"
+                data-toggle="modal"
+                data-target="#editEntry"
+                className="btn btn-info btn-xs sharp mr-1"
+              >
+                <i className="fa fa-edit" />
+              </button>
+            </div>
+          )
+        }
+      }
+    }
+  ]
+
+  const options = {
+    onRowsDelete:(e)=>{alert('DELETED')},
+    selectableRows:'single',
+  }
 
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({ columns, data },useSortBy) 
+  // const data = useMemo(() => tableData,[tableData])
+  // const columns = useMemo(
+  //   () => [
+  //     {
+  //       Header: 'Date',
+  //       accessor: 'date', // accessor is the "key" in the data
+  //     },
+  //     {
+  //       Header: 'Subject',
+  //       accessor: 'subject',
+  //     },
+  //     {
+  //       Header: 'Course',
+  //       accessor: 'course',
+  //     },
+  //     {
+  //       Header: 'Year',
+  //       accessor: 'year',
+  //     },
+  //     {
+  //       Header: 'Section',
+  //       accessor: 'section',
+  //     },
+  //     {
+  //       Header: 'No. of Attendees',
+  //       accessor: 'attendee',
+  //     },
+  //     {
+  //       Header: "Link of Meet Recording",
+  //       accessor: "recording_link"
+  //     },
+  //     {
+  //       Header: 'Learning Activities',
+  //       accessor: 'activity',
+  //     },
+  //     {
+  //       Header: 'Action',
+  //       accessor: 'Action',
+  //     }
+  //   ],
+  //   []
+  // )
 
 
+  // const {
+  //   getTableProps,
+  //   getTableBodyProps,
+  //   headerGroups,
+  //   page,
+  //   nextPage,
+  //   previousPage,
+  //   prepareRow,
+  //   state,
+  //   setGlobalFilter
+  // } = useTable({ columns, data },useGlobalFilter,useSortBy,usePagination) 
+
+  // //search
+  // const { globalFilter } = state
 
   return (
     <React.Fragment>
@@ -352,53 +443,9 @@ const FacultyIndividualView = () => {
                     </div>
 
                     {/* <!-- Set up the datatable --> */}
-                    <table id="filterTable"
-                          className="table"
-                          style={{ minWidth: 845 }} 
-                          {...getTableProps()}>
-                      <thead className="thead-light">
-                        {// Loop over the header rows
-                          headerGroups.map(headerGroup => (
-                            // Apply the header row props
-                            <tr {...headerGroup.getHeaderGroupProps()}>
-                              {// Loop over the headers in each row
-                                headerGroup.headers.map(column => (
-                                  // Apply the header cell props
-                                  <th scope="col" {...column.getHeaderProps(column.getSortByToggleProps())}>
-                                    {// Render the header
-                                      column.render('Header')}
-                                      <span>
-                                        {column.isSorted ? (column.isSortedDesc ?  ' 🔽' : ' 🔼') : ''}
-                                      </span>
-                                  </th>
-                                ))}
-                            </tr>
-                          ))}
-                      </thead>
-                      {/* Apply the table body props */}
-                      <tbody {...getTableBodyProps()}>
-                        {// Loop over the table rows
-                          rows.map(row => {
-                            // Prepare the row for display
-                            prepareRow(row)
-                            return (
-                              // Apply the row props
-                              <tr {...row.getRowProps()}>
-                                {// Loop over the rows cells
-                                  row.cells.map(cell => {
-                                    // Apply the cell props
-                                    return (
-                                      <td {...cell.getCellProps()}>
-                                        {// Render the cell contents
-                                          cell.render('Cell')}
-                                      </td>
-                                    )
-                                  })}
-                              </tr>
-                            )
-                          })}
-                      </tbody>
-                    </table>
+
+                    <MUIDataTable columns={columns} data={tableData} options={options} />
+
 
                     {/* 
                         <table
@@ -615,8 +662,7 @@ const FacultyIndividualView = () => {
                     </div>
                     <div className="card-body">
                       <div className="basic-form">
-                        <form className="form" encType="multipart/form-data" id="form">
-                          <input type="hidden" id="empID" />
+                        <form className="form" onSubmit={updateData} encType="multipart/form-data" id="form">
                           <div className="form-group row">
                             <label className="col-sm-3 col-form-label">Week No.</label>
                             <div className="col-sm-9">
@@ -710,7 +756,7 @@ const FacultyIndividualView = () => {
                                 <input
                                   type="number"
                                   min={0}
-                                  oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+                                  onInput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
                                   className="form-control input-default "
                                   placeholder="No. of Attendees"
                                   onChange={(e) => setAttendee(e.target.value)}

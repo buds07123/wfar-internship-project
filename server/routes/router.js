@@ -26,7 +26,10 @@ router.post('/login', controller.login)
 router.get('/getEmpInfo', verifyToken ,controller.getEmpInfo)  
 router.post('/postWfar', verifyToken, controller.postWfar )    
 router.get('/getWfarInfo', verifyToken, controller.getWfarInfo)
-router.get('/getOneWfarInfo', controller.getOneWfarInfo)
+router.put('/updateOneWfarInfo/:id',verifyToken, controller.updateOneWfarInfo)
+router.post('/postFullWfar', verifyToken, controller.postFullWfar)
+router.get('/getFullWfarInfo',verifyToken, controller.getFullWfarInfo)
+
 router.post('/logout',controller.logout)      
 
 module.exports = router

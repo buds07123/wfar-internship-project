@@ -7,6 +7,7 @@ const crypto = require('crypto')
 const employeeModel = require('../models/Employee')
 const emailTokenModel = require('../models/EmailToken')
 const wfarModel = require('../models/Wfar')
+const fullwfarModel = require('../models/FullWfar')
 
 //upload picture
 const cloudinary = require('../cloudinary/cloudinary')
@@ -197,11 +198,12 @@ exports.getEmpInfo = async (req,res) => {
 
 exports.postWfar = async (req,res) => {
     try {
+        //wfar data
         const emp_id = req.id
         const {week_number,date,subject,course,year,section,attendee,recording_link,activity,meet_screenshots,act_screenshots} = req.body
-        
+
         //employee id
-        id = await employeeModel.findById(emp_id)
+        const id = await employeeModel.findById(emp_id)
 
         //save new wfar
         await new wfarModel({
@@ -236,14 +238,72 @@ exports.getWfarInfo = async (req,res) => {
     }
 }
 
-exports.getOneWfarInfo = async (req,res) => {
+exports.updateOneWfarInfo = async (req,res) => {    
     try {
-        const id = req.body
-        const wfarId = await wfarModel.findById(id)
+        const id = req.params.id
+        const { week_number, date, subject, course, year, section, attendee, recording_link, activity, meet_screenshots, act_screenshots } = req.body
+        const wfar = await wfarModel.findByIdAndUpdate(id, {
+            week_number,
+            date,
+            subject,
+            course,
+            year,
+            section,
+            attendee,
+            recording_link,
+            activity,
+            meet_screenshots,
+            act_screenshots
+        })
+        await wfar.save()
 
-        return res.status(200).json({wfarId})
+        if (!wfar) {
+            return res.status(404).json({ error: "Failed" })
+        }
+
+        return res.status(200).json({ msg: "Wfar Successfully Updated" })
     } catch (error) {
-        return res.status(404).json({err: "wfarId not found"})
+        console.log(error)
+        return res.status(404).json({ err: "wfarId not found" })
+    }
+}
+
+exports.postFullWfar = async (req, res) => {
+    try {
+        //wfar data
+        const emp_id = req.id
+
+        //employee id
+        const id = await employeeModel.findById(emp_id)
+
+        //full wfar data
+        const { school_year, semester, week_number,start_date, end_date, status, comments } = req.body
+
+        await new fullwfarModel({
+            empId: id,
+            school_year,
+            semester,
+            week_number,
+            start_date,
+            end_date,
+            status,
+            comments
+        }).save()
+        
+        return res.status(200).json({ msg: "Post Full Wfar Successfully" })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.getFullWfarInfo = async (req,res) => {
+    const emp_id = req.id
+    try {
+        const empId = await fullwfarModel.find({empId: emp_id})
+
+        return res.status(200).json({empId})
+    } catch (error) {
+        return res.status(404).json({err: "Employee id not found"})
     }
 }
 

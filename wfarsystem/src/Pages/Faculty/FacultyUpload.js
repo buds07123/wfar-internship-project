@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 import Wfarbanner from "../../Components/WfarBanner";
 import Wfarupload from "../../Components/WfarUpload";
 
 const FacultyUpload = () => {
+
+  const location = useLocation()
+  const year = location.state.year
+  const sem = location.state.sem
+
   return (
     <React.Fragment>
       {/* Content */}
@@ -17,7 +23,7 @@ const FacultyUpload = () => {
           {/* Wfar Banner*/}
           <Wfarbanner />
           {/* Wfar Upload*/}
-          <Wfarupload />
+          <Wfarupload schoolYear={year} sem={sem} />
         </div>
       </div>
     </React.Fragment>

@@ -1,26 +1,28 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import AttachmentUpload from "./AttachmentUpload";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Wfarupload = () => {
+const Wfarupload = ({ schoolYear, sem }) => {
 
   const navigate = useNavigate()
 
-  const [week_number,setWeek_number] = useState('')
-  const [date,setDate] = useState('')
-  const [subject,setSubject] = useState('')
-  const [course,setCourse] = useState('')
-  const [year,setYear] = useState('')
-  const [section,setSection] = useState('')
-  const [attendee,setAttendee] = useState('')
-  const [recording_link,setRecording_link] = useState('')
-  const [activity,setActivity] = useState('')
-  const [meet_screenshots,setMeet_screenshots] = useState('')
-  const [act_screenshots,setAct_screenshots] = useState('')
+  const [week_number, setWeek_number] = useState('')
+  const [date, setDate] = useState('')
+  const [subject, setSubject] = useState('')
+  const [course, setCourse] = useState('')
+  const [year, setYear] = useState('')
+  const [section, setSection] = useState('')
+  const [attendee, setAttendee] = useState('')
+  const [recording_link, setRecording_link] = useState('')
+  const [activity, setActivity] = useState('')
+  const [meet_screenshots, setMeet_screenshots] = useState('')
+  const [act_screenshots, setAct_screenshots] = useState('')
+
+  const [school_year, setSchoolYear] = useState(schoolYear)
+  const [semester, setSem] = useState(sem)
 
   const postWfar = async (e) => {
-    e.preventDefault()
 
     // const formData = new FormData()
 
@@ -36,6 +38,8 @@ const Wfarupload = () => {
     // formData.set('meet_screenshots', meet_screenshots)
     // formData.set('act_screenshots', act_screenshots)
 
+
+    //POST WFAR DATA
     const formData = {
       week_number,
       date,
@@ -47,13 +51,35 @@ const Wfarupload = () => {
       recording_link,
       activity
     }
-    
-    await axios.post("http://localhost:4000/api/postWfar",formData)
-    .then(res => {
-      console.log(res)
-      navigate("/FacultyOwnSubmissions")
-    })
-    .catch(err => {console.log(err)})
+
+    //save wfar
+    await axios.post("http://localhost:4000/api/postWfar", formData)
+      .then(res => {
+        console.log(res)
+      })
+      .catch(err => { console.log(err) })
+  }
+
+  const postfullWfar = async (e) => {
+    e.preventDefault()
+
+    setSchoolYear(schoolYear)
+    setSem(sem)
+
+    //POST FULL WFAR DATA
+    const formFullWfarData = {
+      school_year,
+      semester,
+      week_number
+    }
+
+    await axios.post("http://localhost:4000/api/postFullWfar", formFullWfarData)
+      .then(res => {
+        console.log(res)
+        postWfar()
+        navigate("/FacultyOwnSubmissions")
+      })
+      .catch(err => { console.log(err) })
   }
 
   return (
@@ -70,7 +96,7 @@ const Wfarupload = () => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={postWfar} className="form" encType="multipart/form-data" id="form">
+                <form onSubmit={postfullWfar} className="form" encType="multipart/form-data" id="form">
                   <div className="form-group row">
                     <label className="col-sm-3 col-form-label">Week No.</label>
                     <div className="col-sm-9">
@@ -193,7 +219,7 @@ const Wfarupload = () => {
                         Learning Activities
                       </label>
                       <div className="col-sm-9">
-                        <textarea className="form-control" rows={4} defaultValue={""} onChange={(e) => setActivity(e.target.value)} value={activity} required/>
+                        <textarea className="form-control" rows={4} defaultValue={""} onChange={(e) => setActivity(e.target.value)} value={activity} required />
                       </div>
                     </div>
                     <div className="form-group row">
@@ -218,12 +244,12 @@ const Wfarupload = () => {
                         <div className="card shadow-sm w-100">
                           <div className="bg-light-blue card-header d-flex justify-content-between">
                             <h6 className="h6">Provided Activity Screenshot/s</h6>
-                            
+
                           </div>
                           <div className="card-body d-flex flex-wrap justify-content-start"
                             id="act-container">
-                              <AttachmentUpload />
-                            </div>
+                            <AttachmentUpload />
+                          </div>
                         </div>
                       </div>
                     </div>
