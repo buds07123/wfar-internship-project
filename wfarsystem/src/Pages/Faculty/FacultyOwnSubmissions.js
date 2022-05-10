@@ -14,15 +14,18 @@ const FacultyOwnSubmissions = () => {
   const [wfarData,setWfarData] = useState([])
 
   const getFullWfarInfo = async () => {
-    const res = await axios.get('http://localhost:4000/api/getFullWfarInfo')
+    const res = await axios.get(`http://localhost:4000/api/getWfarInfo/${year}/${sem}`)
       .catch(err => console.log(err))
 
     return res.data
   }
 
   useEffect(() => {
-    getFullWfarInfo().then((data) => setWfarData(data.empId))
-  },[])
+    getFullWfarInfo().then((data) => {
+      setWfarData(data.empId)
+    })
+    
+  },[year,sem])
 
   return (
     <React.Fragment>
@@ -65,7 +68,7 @@ const FacultyOwnSubmissions = () => {
               {/* <FacultySubmissionCard /> */}
             {/* </div> */}
             {/* Submissioncard Sample without using the Component */}
-            {wfarData.map((wfar) => {
+            {wfarData.map((wfar, i, {row}) => {
               return (
                 <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6">
                   <div className="card">
@@ -78,7 +81,7 @@ const FacultyOwnSubmissions = () => {
                           <h4 className="h4">
                             <Link to="/FacultyIndividualView" className=" text-primary">{wfar.week_number}</Link>
                           </h4>
-                          <h4 className="h4">April 4, 2022 to April 8, 2022</h4>
+                          <h4 className="h4"> {wfar.start_date} to {wfar.end_date}</h4>
                           <div className="bootstrap-badge mb-5">
                             <span className="badge light badge-info">
                               Status: {wfar.status}
@@ -86,6 +89,10 @@ const FacultyOwnSubmissions = () => {
                           </div>
                           <Link
                             to="/FacultyIndividualView"
+                            state={{
+                              wfarId: wfar._id,
+                              wfarWeekNo: wfar.week_number
+                            }}
                             className="btn btn-rounded btn-warning"
                           >
                             <span className="btn-icon-left text-warning">

@@ -25,11 +25,13 @@ router.get('/verify_email/:id/:token', controller.verify_email)
 router.post('/login', controller.login)
 router.get('/getEmpInfo', verifyToken ,controller.getEmpInfo)  
 router.post('/postWfar', verifyToken, controller.postWfar )    
-router.get('/getWfarInfo', verifyToken, controller.getWfarInfo)
-router.put('/updateOneWfarInfo/:id',verifyToken, controller.updateOneWfarInfo)
-router.post('/postFullWfar', verifyToken, controller.postFullWfar)
-router.get('/getFullWfarInfo',verifyToken, controller.getFullWfarInfo)
-
+router.get('/getWfarInfo/:schoolyear/:sem', verifyToken, controller.getWfarInfo)
+router.get('/getFullWfarInfo/:id', controller.getFullWfarInfo)
+router.put('/updateOneWfarInfo/:id', controller.updateOneWfarInfo)
+router.put('/deleteOneWfar/:id/:rowID', controller.deleteOneWfar)
+router.put('/wfarArchive/:id', controller.wfarArchive)
+router.get('/getAllArchiveData', verifyToken, controller.getAllArchiveData)
+// router.post('/postFullWfar', verifyToken, controller.postFullWfar)
 router.post('/logout',controller.logout)      
 
 module.exports = router

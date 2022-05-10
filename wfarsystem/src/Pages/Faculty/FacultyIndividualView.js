@@ -8,11 +8,9 @@ import "jquery/dist/jquery.min.js";
 import "datatables.net-dt/js/dataTables.dataTables";
 import $ from "jquery";
 import MUIDataTable from 'mui-datatables'
-import { useTable, useSortBy, useGlobalFilter, usePagination } from 'react-table'
 
 import Wfarbanner from "../../Components/WfarBanner";
 import Wfarupload from "../../Components/WfarUpload";
-import { render } from "@testing-library/react";
 import axios from "axios";
 axios.defaults.withCredentials = true
 
@@ -127,18 +125,26 @@ const FacultyIndividualView = () => {
 
   const navigate = useNavigate()
 
+  //wfar_id from page (/FacultyOwnSubmission)
+  const location = useLocation()
+  const wfar_id = location.state.wfarId
+  const wfar_weekNo = location.state.wfarWeekNo
+
   const [updateTable, setUpdateTable] = useState(0)
   const [tableData, setTableData] = useState([])
 
+  //Display Wfar Data
   const getData = async () => {
-    const res = await axios.get('http://localhost:4000/api/getWfarInfo')
+    const res = await axios.get(`http://localhost:4000/api/getFullWfarInfo/${wfar_id}`)
       .catch(err => console.log(err))
 
     return res.data
   }
 
   useEffect(() => {
-    getData().then((data) => setTableData(data.empId))
+    getData().then((data) => {
+      setTableData(data.wfarId[0].info)
+    })
   }, [updateTable])
 
   //Edit Wfar
@@ -186,7 +192,7 @@ const FacultyIndividualView = () => {
   const columns = [
     {
       name: "date",
-      label: "Date"
+      label: "Date",
     },
     {
       name: "subject",
@@ -211,7 +217,7 @@ const FacultyIndividualView = () => {
     {
       name: "Attachments",
       label: "Attachments",
-      options:{
+      options: {
         customBodyRenderLite: (dataIndex, rowIndex) => {
           return (
             <div className="dropdown ml-auto text-center">
@@ -292,70 +298,37 @@ const FacultyIndividualView = () => {
     }
   ]
 
-  const options = {
-    onRowsDelete:(e)=>{alert('DELETED')},
-    selectableRows:'single',
+
+  //to delete one wfar record
+  const [rowID,setRowID] = useState('')
+
+  const deleteHandle = async () => {
+    await axios.put(`http://localhost:4000/api/deleteOneWfar/${wfar_id}/${rowID}`)
   }
 
+  const options = {
+    onRowsSelect : (curRowSelected, allRowsSelected) => {
+      const arrNum = curRowSelected[0].dataIndex
+      setRowID(tableData[arrNum]._id)
+      console.log(tableData[arrNum]._id)
+    },
+    onRowsDelete: (rowsDeleted) => {
+      deleteHandle()
+      setUpdateTable(updateTable + 1)
+    },
+    selectableRows: 'single'
+  }
 
-  // const data = useMemo(() => tableData,[tableData])
-  // const columns = useMemo(
-  //   () => [
-  //     {
-  //       Header: 'Date',
-  //       accessor: 'date', // accessor is the "key" in the data
-  //     },
-  //     {
-  //       Header: 'Subject',
-  //       accessor: 'subject',
-  //     },
-  //     {
-  //       Header: 'Course',
-  //       accessor: 'course',
-  //     },
-  //     {
-  //       Header: 'Year',
-  //       accessor: 'year',
-  //     },
-  //     {
-  //       Header: 'Section',
-  //       accessor: 'section',
-  //     },
-  //     {
-  //       Header: 'No. of Attendees',
-  //       accessor: 'attendee',
-  //     },
-  //     {
-  //       Header: "Link of Meet Recording",
-  //       accessor: "recording_link"
-  //     },
-  //     {
-  //       Header: 'Learning Activities',
-  //       accessor: 'activity',
-  //     },
-  //     {
-  //       Header: 'Action',
-  //       accessor: 'Action',
-  //     }
-  //   ],
-  //   []
-  // )
+  //Archive Button 
+  const ArchiveButton = async (e) => {
+    e.preventDefault()
 
-
-  // const {
-  //   getTableProps,
-  //   getTableBodyProps,
-  //   headerGroups,
-  //   page,
-  //   nextPage,
-  //   previousPage,
-  //   prepareRow,
-  //   state,
-  //   setGlobalFilter
-  // } = useTable({ columns, data },useGlobalFilter,useSortBy,usePagination) 
-
-  // //search
-  // const { globalFilter } = state
+    await axios.put(`http://localhost:4000/api/wfarArchive/${wfar_id}`)
+      .then(res => {
+        console.log(res)
+        navigate("/FacultyOwnSubmissions")
+      })
+  } 
 
   return (
     <React.Fragment>
@@ -374,7 +347,7 @@ const FacultyIndividualView = () => {
               <div className="card">
                 <div className="card-header bg-light-blue">
                   <div className="col-xl-7 col-lg-12">
-                    <h4 className="h4 card-title">Week No.</h4>
+                    <h4 className="h4 card-title">{wfar_weekNo}</h4>
                   </div>
                   <div className="col-xl-5 col-lg-12 justify-content-sm-end d-flex">
                     <div className="dropdown  dropleft mb-1 ">
@@ -411,7 +384,7 @@ const FacultyIndividualView = () => {
                           <i className="fa fa-download" />
                           &nbsp;Download
                         </button>
-                        <button type="button" className="btn btn-danger dropdown-item">
+                        <button type="submit" className="btn btn-danger dropdown-item" onClick={ArchiveButton}>
                           <i className="fa fa-archive" />
                           &nbsp;Archive
                         </button>

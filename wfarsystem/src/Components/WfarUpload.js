@@ -23,7 +23,7 @@ const Wfarupload = ({ schoolYear, sem }) => {
   const [semester, setSem] = useState(sem)
 
   const postWfar = async (e) => {
-
+    e.preventDefault()
     // const formData = new FormData()
 
     // formData.set('week_number', week_number)
@@ -41,6 +41,8 @@ const Wfarupload = ({ schoolYear, sem }) => {
 
     //POST WFAR DATA
     const formData = {
+      school_year,
+      semester,
       week_number,
       date,
       subject,
@@ -56,31 +58,32 @@ const Wfarupload = ({ schoolYear, sem }) => {
     await axios.post("http://localhost:4000/api/postWfar", formData)
       .then(res => {
         console.log(res)
-      })
-      .catch(err => { console.log(err) })
-  }
-
-  const postfullWfar = async (e) => {
-    e.preventDefault()
-
-    setSchoolYear(schoolYear)
-    setSem(sem)
-
-    //POST FULL WFAR DATA
-    const formFullWfarData = {
-      school_year,
-      semester,
-      week_number
-    }
-
-    await axios.post("http://localhost:4000/api/postFullWfar", formFullWfarData)
-      .then(res => {
-        console.log(res)
-        postWfar()
         navigate("/FacultyOwnSubmissions")
       })
       .catch(err => { console.log(err) })
   }
+
+  // const postfullWfar = async (e) => {
+  //   e.preventDefault()
+
+  //   setSchoolYear(schoolYear)
+  //   setSem(sem)
+
+  //   //POST FULL WFAR DATA
+  //   const formFullWfarData = {
+  //     school_year,
+  //     semester,
+  //     week_number
+  //   }
+
+  //   await axios.post("http://localhost:4000/api/postFullWfar", formFullWfarData)
+  //     .then(res => {
+  //       console.log(res)
+  //       postWfar()
+  //       navigate("/FacultyOwnSubmissions")
+  //     })
+  //     .catch(err => { console.log(err) })
+  // }
 
   return (
     <div>
@@ -96,14 +99,12 @@ const Wfarupload = ({ schoolYear, sem }) => {
             </div>
             <div className="card-body">
               <div className="basic-form">
-                <form onSubmit={postfullWfar} className="form" encType="multipart/form-data" id="form">
+                <form onSubmit={postWfar} className="form" encType="multipart/form-data" id="form">
                   <div className="form-group row">
                     <label className="col-sm-3 col-form-label">Week No.</label>
                     <div className="col-sm-9">
                       <select className="form-control default-select form-control-lg" onChange={(e) => setWeek_number(e.target.value)} value={week_number} required>
-                        <option selected disabled>
-                          Select a week
-                        </option>
+                        <option selected disabled>Select a week</option>
                         <option>Week 1</option>
                         <option>Week 2</option>
                         <option>Week 3</option>

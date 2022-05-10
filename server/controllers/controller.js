@@ -11,6 +11,7 @@ const fullwfarModel = require('../models/FullWfar')
 
 //upload picture
 const cloudinary = require('../cloudinary/cloudinary')
+const { default: mongoose } = require('mongoose')
 
 //reqistration
 exports.register = async (req,res) => { 
@@ -196,30 +197,116 @@ exports.getEmpInfo = async (req,res) => {
     return res.status(200).json({emp})
 }
 
+
+//---------WFAR(FACULTY)
 exports.postWfar = async (req,res) => {
     try {
         //wfar data
         const emp_id = req.id
+        const {school_year, semester, comments} = req.body
         const {week_number,date,subject,course,year,section,attendee,recording_link,activity,meet_screenshots,act_screenshots} = req.body
 
         //employee id
         const id = await employeeModel.findById(emp_id)
 
-        //save new wfar
-        await new wfarModel({
-            empId: id,
-            week_number,
-            date,
-            subject,
-            course,
-            year,
-            section,
-            attendee,
-            recording_link,
-            activity,
-            meet_screenshots,
-            act_screenshots
-        }).save()
+        //check if week number is existed
+        const existWfar = await wfarModel.findOne({ week_number: req.body.week_number,semester: req.body.semester, school_year: req.body.school_year });
+        if (existWfar) {
+            const pushNewWfar = await wfarModel.updateOne({
+                _id: existWfar._id
+            },{
+                $push: {
+                    "info": {
+                        week_number,
+                        date,
+                        subject,
+                        course,
+                        year,
+                        section,
+                        attendee,
+                        recording_link,
+                        activity,
+                        meet_screenshots,
+                        act_screenshots
+                    }
+                }  
+            })
+
+            if (pushNewWfar) {
+                const first = await wfarModel.findOne({
+                    _id: existWfar._id
+                },
+                    {
+                        info: {
+                            $slice: 1
+                        }
+                    }
+                )
+
+
+                const last = await wfarModel.findOne({
+                    _id: existWfar._id
+                },
+                    {
+                        info: {
+                            $slice: -1
+                        }
+                    }
+                )
+
+                // console.log()
+                await wfarModel.findByIdAndUpdate(existWfar._id, { start_date: first.info[0].date, end_date: last.info[0].date })
+            }
+        }else{
+            //save new wfar
+            const newWfar = await new wfarModel({
+                empId: id,
+                school_year,
+                semester,
+                week_number,
+                comments,
+                info: [
+                    {
+                        week_number,
+                        date,
+                        subject,
+                        course,
+                        year,
+                        section,
+                        attendee,
+                        recording_link,
+                        activity,
+                        meet_screenshots,
+                        act_screenshots
+                    }
+                ]
+            }).save()
+
+            if(newWfar){
+                const first = await wfarModel.findOne({
+                    _id: newWfar._id
+                },
+                    {
+                        info: {
+                            $slice: 1
+                        }
+                    }
+                )
+
+            
+                const last = await wfarModel.findOne({
+                    _id: newWfar._id
+                },
+                    {
+                        info: {
+                            $slice: -1
+                        }
+                    }
+                )
+
+                await wfarModel.findByIdAndUpdate(newWfar._id, {start_date: first.info[0].date, end_date: last.info[0].date})
+            }
+        }
 
         return res.status(200).json({msg: "Post Wfar Successfully"})
     } catch (error) {
@@ -229,8 +316,15 @@ exports.postWfar = async (req,res) => {
 
 exports.getWfarInfo = async (req,res) => {
     const emp_id = req.id
+    const schoolyear = req.params.schoolyear
+    const sem = req.params.sem
     try {
-        const empId = await wfarModel.find({empId: emp_id})
+        const empId = await wfarModel.find({
+            empId: emp_id,
+            school_year: schoolyear,
+            semester: sem,
+            isActive: true
+        })
 
         return res.status(200).json({empId})
     } catch (error) {
@@ -242,29 +336,97 @@ exports.updateOneWfarInfo = async (req,res) => {
     try {
         const id = req.params.id
         const { week_number, date, subject, course, year, section, attendee, recording_link, activity, meet_screenshots, act_screenshots } = req.body
-        const wfar = await wfarModel.findByIdAndUpdate(id, {
-            week_number,
-            date,
-            subject,
-            course,
-            year,
-            section,
-            attendee,
-            recording_link,
-            activity,
-            meet_screenshots,
-            act_screenshots
-        })
-        await wfar.save()
-
+        
+        const wfar = await wfarModel.findOneAndUpdate({ "info._id": id },
+            {
+                $set: {
+                    'info.$.week_number': week_number,
+                    'info.$.date': date,
+                    'info.$.subject': subject,
+                    'info.$.year': year,
+                    'info.$.course': course,
+                    'info.$.section': section,
+                    'info.$.attendee': attendee,
+                    'info.$.recording_link': recording_link,
+                    'info.$.activity': activity,
+                    'info.$.meet_screenshots': meet_screenshots,
+                    'info.$.act_screenshots': act_screenshots
+                }
+            }
+        )
+        
         if (!wfar) {
             return res.status(404).json({ error: "Failed" })
+        }else{
+            const first = await wfarModel.findOne({
+                "info._id": id
+            },
+                {
+                    info: {
+                        $slice: 1
+                    }
+                }
+            )
+
+
+            const last = await wfarModel.findOne({
+                "info._id": id
+            },
+                {
+                    info: {
+                        $slice: -1
+                    }
+                }
+            )
+
+            await wfarModel.findOneAndUpdate({"info._id": id}, { start_date: first.info[0].date, end_date: last.info[0].date })
         }
 
         return res.status(200).json({ msg: "Wfar Successfully Updated" })
     } catch (error) {
         console.log(error)
         return res.status(404).json({ err: "wfarId not found" })
+    }
+}
+
+exports.deleteOneWfar = async (req,res) => {
+    try {
+        const id = req.params.id
+        const rowID = req.params.rowID
+        const deleteWfar = await wfarModel.findOneAndUpdate(
+            { _id: id }, 
+            { $pull: { info: { _id: rowID } } },
+            {new:true, multi:true}
+        );
+
+        if(deleteWfar){
+            const first = await wfarModel.findOne({
+                _id: id
+            },
+                {
+                    info: {
+                        $slice: 1
+                    }
+                }
+            )
+
+
+            const last = await wfarModel.findOne({
+                _id: id
+            },
+                {
+                    info: {
+                        $slice: -1
+                    }
+                }
+            )
+
+            await wfarModel.findOneAndUpdate({_id: id}, { start_date: first.info[0].date, end_date: last.info[0].date })
+        }
+
+        return res.status(200).json({msg: "Successfully deleted!"})
+    } catch (error) {
+        console.log(error)
     }
 }
 
@@ -297,13 +459,39 @@ exports.postFullWfar = async (req, res) => {
 }
 
 exports.getFullWfarInfo = async (req,res) => {
-    const emp_id = req.id
-    try {
-        const empId = await fullwfarModel.find({empId: emp_id})
+    const wfar_id = req.params.id
 
-        return res.status(200).json({empId})
+    try {
+        const wfarId = await wfarModel.find({ _id: wfar_id })
+
+        return res.status(200).json({wfarId})
     } catch (error) {
-        return res.status(404).json({err: "Employee id not found"})
+        return res.status(404).json({err: "Wfar id not found"})
+    }
+}
+
+//to archive
+exports.wfarArchive = async (req,res) => {
+    try {
+        const id = req.params.id
+        await wfarModel.findByIdAndUpdate(id, { isActive: false })
+
+        return res.status(200).json({msg: "Successfully updated"})
+    } catch (error) {
+        consolo.log(error)
+    }
+}
+
+//-----ARCHIVE table------
+exports.getAllArchiveData = async (req,res) => {
+    try {
+        const empId = req.id
+
+        const empData = await wfarModel.find({ empId: empId, isActive: false })
+
+        return res.status(200).json({empData})
+    } catch (error) {
+        console.log(error)
     }
 }
 
