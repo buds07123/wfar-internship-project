@@ -24,8 +24,24 @@ const FacultyOwnSubmissions = () => {
     getFullWfarInfo().then((data) => {
       setWfarData(data.empId)
     })
-    
   },[year,sem])
+
+
+  //get weeks
+  const [weekNo,setWeekNo] = useState([])
+
+  const getWeeks = async () => {
+    const res = await axios.get(`http://localhost:4000/api/findWeekNo/${year}`)
+      .catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    getWeeks().then((data) => {
+      setWeekNo(data.weeks[0].week_number)
+    })
+  },[year])
 
   return (
     <React.Fragment>
@@ -49,7 +65,8 @@ const FacultyOwnSubmissions = () => {
             <div className="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
               <Link to="/FacultyUpload" state={{
                   year: year,
-                  sem: sem
+                  sem: sem,
+                  weekNo: weekNo
                 }}>
                 <button type="button" className="btn btn-rounded btn-secondary">
                   <span className="btn-icon-left text-secondary">
@@ -68,7 +85,7 @@ const FacultyOwnSubmissions = () => {
               {/* <FacultySubmissionCard /> */}
             {/* </div> */}
             {/* Submissioncard Sample without using the Component */}
-            {wfarData.map((wfar, i, {row}) => {
+            {wfarData.map((wfar) => {
               return (
                 <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6">
                   <div className="card">

@@ -1,6 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const AdminLogin = () => {
+const AdminLogin = () => {  
+
+  const navigate = useNavigate()
+
+  const [username,setUsername] = useState('')
+  const [password,setPassword] = useState('')
+
+  const adminLogin = async (e) => {
+    e.preventDefault()
+
+    const loginData = {
+      username,
+      password
+    }
+
+    await axios.post("http://localhost:4000/api/adminLogin",loginData)
+    .then(res => {window.location.href = '/Admin'})
+    .catch(err => {
+      console.log(err)
+      if (err.response.data.err === "invalid password") {
+        alert('Invalid Password.')
+      } else if (err.response.data.err === "The username is not existing") {
+        alert('The username is not existing.')
+      }
+    })
+  }
+
   return (
     <React.Fragment>
       <div>
@@ -10,7 +38,7 @@ const AdminLogin = () => {
             <img src="assets/img/login1.png" />
           </div>
           <div className="login-content">
-            <form className="login-form" action="#">
+            <form className="login-form" onSubmit={adminLogin}>
               <div className="text-center mb-4 logo">
                 <img src="assets/img/cict-logo.png" alt />
               </div>
@@ -20,7 +48,7 @@ const AdminLogin = () => {
                   <i className="ti-user" />
                 </div>
                 <div className="div">
-                  <input type="text" className="input" placeholder="Username or Email" />
+                  <input type="text" className="input" onChange={(e) => setUsername(e.target.value)} value={username} placeholder="Username" required />
                 </div>
               </div>
               <div className="input-div pass">
@@ -28,7 +56,7 @@ const AdminLogin = () => {
                   <i className="ti-lock" />
                 </div>
                 <div className="div">
-                  <input type="password" className="input" placeholder="Password" />
+                  <input type="password" className="input" onChange={(e) => setPassword(e.target.value)} value={password} placeholder="Password" required />
                 </div>
               </div>
               <a href="forgotPassword" data-toggle="modal" data-target="#forgotPassword">

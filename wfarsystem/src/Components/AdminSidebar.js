@@ -1,9 +1,22 @@
 import { NavLink } from "react-router-dom";
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import axios from "axios";
+axios.defaults.withCredentials = true
 
 const AdminSidebar = () => {
   // CHANGE HIGHLIGHTED BUTTON ON SIDEBAR
   const [isSideClicked, setSideClicked] = useState("--");
+  const [admin, setAdmin] = useState('')
+
+  const adminData = async () => {
+    const res = await axios.get('http://localhost:4000/api/getAdminInfo').catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    adminData().then((data) => setAdmin(data.admin))
+  }, [])
 
   return (
     <React.Fragment>
@@ -12,13 +25,13 @@ const AdminSidebar = () => {
         <div className="deznav-scroll">
           <div className="main-profile">
             <div className="image-bx">
-              <img src="assets/img/user-sample.png" alt />
+              <img src={admin.picture} alt />
               <NavLink exact to="/AdminProfile">
                 <i className="fa fa-cog" aria-hidden="true" />
               </NavLink>
             </div>
             <h5 className="h5 name">
-              <span className="font-w400">Hello,</span> Cruz
+              <span className="font-w400">Hello,</span> {admin.last_name}
             </h5>
           </div>
           <ul className="metismenu" id="menu">

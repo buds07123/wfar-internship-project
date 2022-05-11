@@ -82,8 +82,8 @@ const UserSignUp = () => {
 
     await axios.post("http://localhost:4000/api/register", formData)
       .then(res => {
-        if (res.data.msg === "Verification email is sent to your email account") {
-          alert('Verification email is sent to your email account.')
+        if (res.data.msg === "Registration Successful") {
+          alert('Registration Successful.')
           navigate("/UserSignIn");
         }
       })

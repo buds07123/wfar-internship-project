@@ -1,6 +1,26 @@
-import React from "react";
+import React,{useState,useEffect} from "react";
+
+import axios from "axios";
+axios.defaults.withCredentials = true
 
 const YearSemSelection = ({setYear,setSem}) => {
+
+  const [data, setData] = useState([])
+
+  //Display User Data
+  const getData = async () => {
+    const res = await axios.get(`http://localhost:4000/api/getAllBatch`)
+      .catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    getData().then((data) => {
+      setData(data.batch)
+    })
+  }, [])
+
   return (
     <React.Fragment>
       <div className="row page-titles mx-0 mt-4 bg-white p-3">
@@ -19,8 +39,13 @@ const YearSemSelection = ({setYear,setSem}) => {
                     <option selected disabled hidden>
                       Select year
                     </option>
-                    <option value="2021-2022">2021-2022</option>
-                    <option value="2020-2021">2020-2021</option>
+                    {data.map((batch) => {
+                      return (
+                        <>
+                          <option value={batch.school_year}>{batch.school_year}</option>
+                        </>
+                      )
+                    })}
                   </select>
                 </div>
               </form>

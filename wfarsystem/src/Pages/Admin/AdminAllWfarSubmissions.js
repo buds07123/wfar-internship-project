@@ -1,11 +1,52 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link,useNavigate } from "react-router-dom";
 
 import Wfarbanner from "../../Components/WfarBanner";
 import YearSemSelection from "../../Components/YearSemSelection";
 import SubmissionCard from "../../Components/SubmissionCard";
 
+import axios from "axios";
+axios.defaults.withCredentials = true
+
 const AdminAllWfarSubmissions = () => {
+
+  const navigate = useNavigate()
+  const [updateTable, setUpdateTable] = useState(0)
+  const [data, setData] = useState([])
+
+  //Display User Data
+  const getData = async () => {
+    const res = await axios.get(`http://localhost:4000/api/getAllActiveUser`)
+      .catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    getData().then((data) => {
+      setData(data.empData)
+    })
+  }, [])
+
+  const [school_year,setSchool_year] = useState('')
+  // const [semester,setSemester] = useState('')
+  const [week_number,setWeek_number] = useState('')
+
+  const createNewBatch = async (e) => {
+    e.preventDefault()
+
+    const formData = {
+      school_year,
+      week_number
+    }
+
+    await axios.post('http://localhost:4000/api/newBatch',formData)
+    .then(res => {
+      alert('Successfully created.')
+      window.location.reload()
+    })
+  }
+
   return (
     <>
       {/* Content */}
@@ -36,70 +77,49 @@ const AdminAllWfarSubmissions = () => {
           {/* School year, Sem Selection */}
           <YearSemSelection />
           <div className="row">
-            <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6">
+            {/* <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6"> */}
               {/* Admin Submissioncard Component */}
-              <SubmissionCard />
-            </div>
+              {/* <SubmissionCard />
+            </div> */}
 
             {/* Admin Submissioncard Sample without using the Component */}
-            <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6">
-              <div className="card">
-                <div className="card-body">
-                  <div className="wfar-entry">
-                    <div className="wfar-img-content">
-                      <img className="img-fluid" src="assets/img/file.png"/>
-                    </div>
-                    <div className="wfar-content text-center mt-3">
-                      <h4 className="h4">
-                        <Link to="/AdminIndividualFaculty" className="text-primary">
-                          Juan dela Cruz
-                        </Link>
-                      </h4>
-                      <h4 className="h4">Faculty</h4>
-                      <Link
-                        to="/AdminIndividualFaculty"
-                        className="btn btn-rounded btn-warning"
-                      >
-                        <span className="btn-icon-left text-warning">
-                          <i className="fa fa-eye color-warning" />
-                        </span>
-                        View
-                      </Link>
+            {data.map((emp) => {
+              return (
+                <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6">
+                  <div className="card">
+                    <div className="card-body">
+                      <div className="wfar-entry">
+                        <div className="wfar-img-content">
+                          <img className="img-fluid" src="assets/img/file.png" />
+                        </div>
+                        <div className="wfar-content text-center mt-3">
+                          <h4 className="h4">
+                            <Link to="/AdminIndividualFaculty" className="text-primary">
+                              {emp.fname} {emp.mname} {emp.lname}
+                            </Link>
+                          </h4>
+                          <h4 className="h4">{emp.updatedPosition}</h4>
+                          <Link
+                            to="/AdminIndividualFaculty"
+                            className="btn btn-rounded btn-warning"
+                            state={{
+                              empId: emp._id,
+                              fullname: emp.fname + " " + emp.mname + " " + emp.lname
+                            }}
+                          >
+                            <span className="btn-icon-left text-warning">
+                              <i className="fa fa-eye color-warning" />
+                            </span>
+                            View
+                          </Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              )
+            })}
 
-            {/* Admin Submissioncard Sample without using the Component */}
-            <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6">
-              <div className="card">
-                <div className="card-body">
-                  <div className="wfar-entry">
-                    <div className="wfar-img-content">
-                      <img className="img-fluid" src="assets/img/file.png" alt />
-                    </div>
-                    <div className="wfar-content text-center mt-3">
-                      <h4 className="h4">
-                        <Link to="/AdminIndividualFaculty" className="text-primary">
-                          Rosemarie M. Bautista
-                        </Link>
-                      </h4>
-                      <h4 className="h4">Department Head</h4>
-                      <Link
-                        to="/AdminIndividualFaculty"
-                        className="btn btn-rounded btn-warning"
-                      >
-                        <span className="btn-icon-left text-warning">
-                          <i className="fa fa-eye color-warning" />
-                        </span>
-                        View
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -115,7 +135,7 @@ const AdminAllWfarSubmissions = () => {
               </button>
             </div>
             <div className="modal-body">
-              <form>
+              <form onSubmit={createNewBatch}>
                 <div className="row">
                   <div className="col-lg-6">
                     <div className="form-group">
@@ -129,10 +149,12 @@ const AdminAllWfarSubmissions = () => {
                       type="text"
                       className="form-control"
                       placeholder="School Year"
+                      onChange={e => setSchool_year(e.target.value)}
+                      value={school_year}
                     />
                   </div>
                 </div>
-                <div className="row mt-3 mb-3">
+                {/* <div className="row mt-3 mb-3">
                   <div className="col-lg-6">
                     <div className="form-group">
                       <label className="text-black font-w600">
@@ -141,15 +163,18 @@ const AdminAllWfarSubmissions = () => {
                     </div>
                   </div>
                   <div className="col-lg-6">
-                    <select className="form-control default-select form-control-lg">
-                      <option value selected disabled hidden>
+                    <select className="form-control default-select form-control-lg"
+                      onChange={e => setSemester(e.target.value)}
+                      defaultValue={semester}
+                    >
+                      <option value={school_year} selected disabled hidden>
                         Select Semester
                       </option>
-                      <option value>First Semester</option>
-                      <option value>Second Semester</option>
+                      <option value="First Semester">First Semester</option>
+                      <option value="Second Semester">Second Semester</option>
                     </select>
                   </div>
-                </div>
+                </div> */}
                 <div className="row mt-3 mb-3">
                   <div className="col-lg-6">
                     <div className="form-group">
@@ -159,12 +184,15 @@ const AdminAllWfarSubmissions = () => {
                     </div>
                   </div>
                   <div className="col-lg-6">
-                    <select className="form-control default-select form-control-lg">
-                      <option value selected disabled hidden>
+                    <select className="form-control default-select form-control-lg"
+                      onChange={e => setWeek_number(e.target.value)}
+                      defaultValue={week_number}
+                    >
+                      <option value={week_number} selected disabled hidden>
                         Select
                       </option>
-                      <option value>18 Weeks</option>
-                      <option value>15 Weeks</option>
+                      <option value="18 Weeks">18 Weeks</option>
+                      <option value="15 Weeks">15 Weeks</option>
                     </select>
                   </div>
                 </div>

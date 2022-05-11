@@ -5127,6 +5127,12 @@ input[type="button"].btn-block {
     color: #fff;
 }
 
+.profile-personal-info {
+	word-wrap: break-word;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
 .card {
     position: relative;
     display: flex;
@@ -10872,7 +10878,7 @@ a.text-dark:focus {
         text-decoration: underline;
     }
     abbr[title]::after {
-        content: " ("attr(title) ")";
+        content: ("attr(title)");
     }
     pre {
         white-space: pre-wrap !important;

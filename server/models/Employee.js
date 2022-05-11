@@ -1,6 +1,14 @@
 const mongoose = require('mongoose')
 
 const employeeSchema = new mongoose.Schema({
+    ac_inCharge: {
+        type: String,
+        default: "None"
+    },
+    dh_inCharge: {
+        type: String,
+        default: "None"
+    },
     emp_picture: { 
         type: String,
         required: false
@@ -37,6 +45,10 @@ const employeeSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    updatedPosition: {
+        type: String,
+        default: "Faculty"
+    },
     username: { 
         type: String,
         required: true,
@@ -50,6 +62,14 @@ const employeeSchema = new mongoose.Schema({
     isVerified:{
         type: Boolean,
         default: false,
+    },
+    status: {
+        type: String,
+        default: "Pending"
+    },
+    dateOfRequest: {
+        type: String,
+        required: false
     },
     password: { 
         type: String,

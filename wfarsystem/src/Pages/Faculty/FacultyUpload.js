@@ -9,6 +9,7 @@ const FacultyUpload = () => {
   const location = useLocation()
   const year = location.state.year
   const sem = location.state.sem
+  const weekNo = location.state.weekNo
 
   return (
     <React.Fragment>
@@ -23,7 +24,7 @@ const FacultyUpload = () => {
           {/* Wfar Banner*/}
           <Wfarbanner />
           {/* Wfar Upload*/}
-          <Wfarupload schoolYear={year} sem={sem} />
+          <Wfarupload schoolYear={year} sem={sem} weekNo={weekNo} />
         </div>
       </div>
     </React.Fragment>

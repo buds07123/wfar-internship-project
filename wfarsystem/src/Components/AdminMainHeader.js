@@ -1,7 +1,27 @@
-import React from "react";
+import React, { useState,useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from 'axios';
+axios.defaults.withCredentials = true
 
 const AdminMainHeader = () => {
+
+  const [admin, setAdmin] = useState('')
+
+  const adminData = async () => {
+    const res = await axios.get('http://localhost:4000/api/getAdminInfo').catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    adminData().then((data) => setAdmin(data.admin))
+  }, [])
+
+  const logoutButton = async () => {
+    await axios.post('http://localhost:4000/api/adminLogout')
+    window.location.href = '/AdminLogin'
+  }
+
   return (
     <React.Fragment>
       {/* Header */}
@@ -94,9 +114,9 @@ const AdminMainHeader = () => {
             </li>
             <li className="nav-item dropdown header-profile">
               <a className="nav-link" href="#" role="button" data-toggle="dropdown">
-                <img src="assets/img/user-sample.png" width={20} alt />
+                <img src={admin.picture} width={20} alt />
                 <div className="header-info">
-                  <span>Juan dela Cruz</span>
+                  <span>{admin.first_name} {admin.middle_name} {admin.last_name}</span>
                   <small>Admin</small>
                 </div>
               </a>
@@ -120,7 +140,7 @@ const AdminMainHeader = () => {
                   </svg>
                   <span className="ml-2">Profile </span>
                 </Link>
-                <Link to="#" className="dropdown-item ai-icon">
+                <button onClick={logoutButton} className="dropdown-item ai-icon">
                   <svg
                     id="icon-logout"
                     xmlns="http://www.w3.org/2000/svg"
@@ -139,7 +159,7 @@ const AdminMainHeader = () => {
                     <line x1={21} y1={12} x2={9} y2={12} />
                   </svg>
                   <span className="ml-2">Logout </span>
-                </Link>
+                </button>
               </div>
             </li>
           </ul>

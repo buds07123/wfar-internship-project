@@ -1,9 +1,13 @@
 import React, { useState,useEffect } from "react";
-import axios from "axios";
-
+import axios from 'axios'
 axios.defaults.withCredentials = true
 
 const ProfileSettings = () => {
+  const [editable, setEditable] = useState({});
+
+  const handleEdit = (id) => {
+    setEditable({ ...editable, [id]: !editable[id] });
+  };
 
   const [empData, setempData] = useState('')
 
@@ -16,6 +20,63 @@ const ProfileSettings = () => {
   useEffect(() => {
     employeeData().then((data) => setempData(data.emp))
   }, [])
+
+  //Edit Profile
+  const [emp_number, setEmp_number] = useState(empData.emp_number)
+  const [fname, setFirst_name] = useState(empData.fname)
+  const [mname, setMiddle_name] = useState(empData.mname)
+  const [lname, setLast_name] = useState(empData.lname)
+  const [name_extension, setName_ex] = useState(empData.name_extension)
+  const [username, setUsername] = useState(empData.username)
+  const [email, setEmail] = useState(empData.email)
+  const [password, setPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [passwordCheck, setPasswordCheck] = useState('')
+
+  const submitBtn = async (e) => {
+    e.preventDefault()
+
+    const formData = {
+      emp_number,
+      fname,
+      mname,
+      lname,
+      name_extension,
+      username,
+      email
+    }
+    
+    await axios.put(`http://localhost:4000/api/editProfile/${empData._id}`,formData)
+    .then(res => {
+      if(res.data.msg === "Successfully Updated"){
+        alert("Successfully Updated!")
+      }
+    })
+  }
+
+  const changePassword = async (e) => {
+    e.preventDefault()
+
+    const formData = {
+      password,
+      newPassword,
+      passwordCheck
+    }
+
+    await axios.put(`http://localhost:4000/api/changePassword/${empData._id}`,formData)
+    .then(res => {
+      if(res.data.msg == "Password Successfully Updated"){
+        alert("Password Successfully Updated.")
+      }
+    })
+    .catch(err => {
+      if(err.response.data.err == "Invalid password."){
+        alert("Invalid password.")
+      }else if(err.response.data.err == "Password must be same for verification") {
+        alert("Password must be same for verification.")
+      }
+    })
+  }
 
   return (
     <React.Fragment>
@@ -46,82 +107,117 @@ const ProfileSettings = () => {
                         <div className="pt-4 border-bottom-1 pb-3">
                           <h5 className="h5 text-primary">Edit Profile Information</h5>
                         </div>
-                        <form>
+                        <form onSubmit={submitBtn} encType="multipart/form-data">
                           <div className="form-row">
                             <label>Employee Number :</label>
                             <div className="input-group mb-3">
                               <input
-                                type="text"
+                                type="number"
+                                autoComplete="off"
                                 className="form-control"
-                                placeholder={2018107260}
-                                readOnly
+                                placeholder={empData.emp_number}
+                                id="empNumber"
+                                disabled={!editable.empNumber}
+                                onChange={(e) => setEmp_number(e.target.value)}
+                                value={emp_number}
                               />
-                              <input
-                                className="btn btn-primary"
-                                name="Edit"
+                              <button
                                 type="button"
-                                defaultValue="Edit"
-                              />
+                                className="btn btn-primary"
+                                onClick={() => {
+                                  handleEdit("empNumber");
+                                }}
+                              >
+                                <i className="fa fa-edit" />
+                              </button>
                             </div>
                             <label>First Name :</label>
                             <div className="input-group mb-3">
                               <input
                                 type="text"
+                                autoComplete="off"
                                 className="form-control"
-                                placeholder="Juan"
-                                readOnly
+                                placeholder={empData.fname}
+                                id="fname"
+                                disabled={!editable.fname}
+                                onChange={(e) => setFirst_name(e.target.value)}
+                                value={fname}
                               />
-                              <input
-                                className="btn btn-primary"
-                                name="Edit"
+                              <button
                                 type="button"
-                                defaultValue="Edit"
-                              />
+                                className="btn btn-primary"
+                                onClick={() => {
+                                  handleEdit("fname");
+                                }}
+                              >
+                                <i className="fa fa-edit" />
+                              </button>
                             </div>
                             <label>Middle Name (Not required) :</label>
                             <div className="input-group mb-3">
                               <input
                                 type="text"
+                                autoComplete="off"
                                 className="form-control"
-                                placeholder="Middle name"
-                                readOnly
+                                placeholder={empData.mname}
+                                id="mname"
+                                disabled={!editable.mname}
+                                onChange={(e) => setMiddle_name(e.target.value)}
+                                value={mname}
                               />
-                              <input
-                                className="btn btn-primary"
-                                name="Edit"
+                              <button
                                 type="button"
-                                defaultValue="Edit"
-                              />
+                                className="btn btn-primary"
+                                onClick={() => {
+                                  handleEdit("mname");
+                                }}
+                              >
+                                <i className="fa fa-edit" />
+                              </button>
                             </div>
                             <label>Last Name :</label>
                             <div className="input-group mb-3">
                               <input
                                 type="text"
+                                autoComplete="off"
                                 className="form-control"
-                                placeholder="dela Cruz"
-                                readOnly
+                                placeholder={empData.lname}
+                                id="lname"
+                                disabled={!editable.lname}
+                                onChange={(e) => setLast_name(e.target.value)}
+                                value={lname}
                               />
-                              <input
-                                className="btn btn-primary"
-                                name="Edit"
+                              <button
                                 type="button"
-                                defaultValue="Edit"
-                              />
+                                className="btn btn-primary"
+                                onClick={() => {
+                                  handleEdit("lname");
+                                }}
+                              >
+                                <i className="fa fa-edit" />
+                              </button>
                             </div>
                             <label>Name Extension (Not required) :</label>
                             <div className="input-group mb-3">
                               <input
                                 type="text"
+                                autoComplete="off"
                                 className="form-control"
-                                placeholder="Name Extension"
-                                readOnly
+                                placeholder={empData.name_extension}
+                                id="nameEx"
+                                disabled={!editable.nameEx}
+                                onChange={(e) => setName_ex(e.target.value)}
+                                value={name_extension}
                               />
-                              <input
-                                className="btn btn-primary"
-                                name="Edit"
+                              <button
                                 type="button"
-                                defaultValue="Edit"
-                              />
+                                className="btn btn-primary"
+                                onClick={() => {
+                                  handleEdit("nameEx");
+                                }}
+                              >
+                                <i className="fa fa-edit" />
+                              </button>
                             </div>
                             <div className="form-group mb-0 ml-auto pt-3">
                               <input
@@ -135,45 +231,57 @@ const ProfileSettings = () => {
                       </div>
                     </div>
                   </div>
-
-                  {/* Edit Account Credentials */}
                   <div id="account-settings" className="tab-pane fade">
                     <div className="pt-3">
                       <div className="settings-form">
                         <div className="pt-4 border-bottom-1 pb-3">
                           <h5 className="h5 text-primary">Edit Account Credentials</h5>
                         </div>
-                        <form>
+                        <form onSubmit={submitBtn}>
                           <div className="form-row">
                             <label>Email Address :</label>
                             <div className="input-group mb-3">
                               <input
                                 className="form-control"
+                                autoComplete="off"
                                 type="email"
-                                placeholder="juandelacruz@gmail.com"
-                                readOnly
+                                placeholder={empData.email}
+                                id="email"
+                                disabled={!editable.email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                value={email}
                               />
-                              <input
-                                className="btn btn-primary"
-                                name="Edit"
+                              <button
                                 type="button"
-                                defaultValue="Edit"
-                              />
+                                className="btn btn-primary"
+                                onClick={() => {
+                                  handleEdit("email");
+                                }}
+                              >
+                                <i className="fa fa-edit" />
+                              </button>
                             </div>
                             <label>Username :</label>
                             <div className="input-group mb-5">
                               <input
                                 type="text"
+                                autoComplete="off"
                                 className="form-control"
-                                placeholder="juandelacruz"
-                                readOnly
+                                placeholder={empData.username}
+                                id="username"
+                                disabled={!editable.username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                value={username}
                               />
-                              <input
-                                className="btn btn-primary"
-                                name="Edit"
+                              <button
                                 type="button"
-                                defaultValue="Edit"
-                              />
+                                className="btn btn-primary"
+                                onClick={() => {
+                                  handleEdit("username");
+                                }}
+                              >
+                                <i className="fa fa-edit" />
+                              </button>
                             </div>
                             <div className="input-group mb-3">
                               <h4 className="text-muted mb-0">
@@ -196,7 +304,6 @@ const ProfileSettings = () => {
                             </div>
                           </div>
                         </form>
-                        
                         {/* Change Password Modal */}
                         <div className="modal fade" id="changePassword">
                           <div
@@ -216,13 +323,15 @@ const ProfileSettings = () => {
                               </div>
                               <div className="modal-body">
                                 <h5 className="h5 text-primary d-inline">Enter:</h5>
-                                <form>
+                                <form onSubmit={changePassword}>
                                   <div className="row mt-4 sp4">
                                     <label>Old Password*</label>
                                     <div className="input-group mb-2">
                                       <input
                                         type="password"
                                         className="form-control"
+                                        onChange={e => setPassword(e.target.value)}
+                                        value={password}
                                         required
                                       />
                                     </div>
@@ -231,6 +340,8 @@ const ProfileSettings = () => {
                                       <input
                                         type="password"
                                         className="form-control"
+                                        onChange={e => setNewPassword(e.target.value)}
+                                        value={newPassword}
                                         required
                                       />
                                     </div>
@@ -239,6 +350,8 @@ const ProfileSettings = () => {
                                       <input
                                         type="password"
                                         className="form-control"
+                                        onChange={e => setPasswordCheck(e.target.value)}
+                                        value={passwordCheck}
                                         required
                                       />
                                     </div>
@@ -272,5 +385,4 @@ const ProfileSettings = () => {
     </React.Fragment>
   );
 };
-
 export default ProfileSettings;

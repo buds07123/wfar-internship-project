@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 //Bootstrap and jQuery libraries
 import 'jquery/dist/jquery.min.js';
 //Datatable Modules
@@ -6,66 +7,194 @@ import "datatables.net-dt/js/dataTables.dataTables";
 import $ from 'jquery';
 import { render } from "@testing-library/react";
 
-class AdminWfarIndividualView extends React.Component {
-  componentDidMount() {
-    //initialize datatable
-    $("document").ready(function () {
-      $("#filterTable").dataTable({
-        retrieve: true,
-        paging: true,
-        searching: true,
-        orderCellsTop: true,
-        language: {
-          paginate: {
-            next: '<i class="fa fa-angle-double-right" aria-hidden="true"></i>',
-            previous: '<i class="fa fa-angle-double-left" aria-hidden="true"></i>',
-          },
-        },
-      });
+import MUIDataTable from 'mui-datatables'
+import axios from "axios";
+axios.defaults.withCredentials = true
+
+const AdminWfarIndividualView = () => {
+  // componentDidMount() {
+  //   //initialize datatable
+  //   $("document").ready(function () {
+  //     $("#filterTable").dataTable({
+  //       retrieve: true,
+  //       paging: true,
+  //       searching: true,
+  //       orderCellsTop: true,
+  //       language: {
+  //         paginate: {
+  //           next: '<i class="fa fa-angle-double-right" aria-hidden="true"></i>',
+  //           previous: '<i class="fa fa-angle-double-left" aria-hidden="true"></i>',
+  //         },
+  //       },
+  //     });
 
 
-      //Get a reference to the new datatable
-      var table = $("#filterTable").DataTable();
+  //     //Get a reference to the new datatable
+  //     var table = $("#filterTable").DataTable();
 
-      //Take the category filter drop down and append it to the datatables_filter div.
-      //You can use this same idea to move the filter anywhere withing the datatable that you want.
-      $("#filterTable_filter.dataTables_filter").append($("#categoryFilter"));
+  //     //Take the category filter drop down and append it to the datatables_filter div.
+  //     //You can use this same idea to move the filter anywhere withing the datatable that you want.
+  //     $("#filterTable_filter.dataTables_filter").append($("#categoryFilter"));
 
-      //Get the column index for the Category column to be used in the method below ($.fn.dataTable.ext.search.push)
-      //This tells datatables what column to filter on when a user selects a value from the dropdown.
-      //It's important that the text used here (Category) is the same for used in the header of the column to filter
-      var categoryIndex = 4;
-      $("#filterTable th").each(function (i) {
-        if ($($(this)).html() == "Category") {
-          categoryIndex = i;
-          return false;
-        }
-      });
+  //     //Get the column index for the Category column to be used in the method below ($.fn.dataTable.ext.search.push)
+  //     //This tells datatables what column to filter on when a user selects a value from the dropdown.
+  //     //It's important that the text used here (Category) is the same for used in the header of the column to filter
+  //     var categoryIndex = 4;
+  //     $("#filterTable th").each(function (i) {
+  //       if ($($(this)).html() == "Category") {
+  //         categoryIndex = i;
+  //         return false;
+  //       }
+  //     });
 
-      //Use the built in datatables API to filter the existing rows by the Category column
-      $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-        var selectedItem = $("#categoryFilter").val();
-        var category = data[categoryIndex];
-        if (selectedItem === "" || category.includes(selectedItem)) {
-          return true;
-        }
-        return false;
-      });
+  //     //Use the built in datatables API to filter the existing rows by the Category column
+  //     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+  //       var selectedItem = $("#categoryFilter").val();
+  //       var category = data[categoryIndex];
+  //       if (selectedItem === "" || category.includes(selectedItem)) {
+  //         return true;
+  //       }
+  //       return false;
+  //     });
 
-      //Set the change event for the Category Filter dropdown to redraw the datatable each time
-      //a user selects a new filter.
-      $("#categoryFilter").change(function (e) {
-        table.draw();
-      });
+  //     //Set the change event for the Category Filter dropdown to redraw the datatable each time
+  //     //a user selects a new filter.
+  //     $("#categoryFilter").change(function (e) {
+  //       table.draw();
+  //     });
 
-      table.draw();
-    });
+  //     table.draw();
+  //   });
+  // }
+
+  const location = useLocation()
+  const wfarId = location.state.wfarId
+  const weekNo = location.state.weekNo
+
+  const [tableData, setTableData] = useState([])
+
+  //Display Wfar Data
+  const getData = async () => {
+    const res = await axios.get(`http://localhost:4000/api/getWfarsPerWeek/${wfarId}`)
+      .catch(err => console.log(err))
+
+    return res.data
   }
 
-render() {
+  useEffect(() => {
+    getData().then((data) => {
+      setTableData(data.wfar[0].info)
+      console.log(data.wfar[0].info)
+    })
+  }, [])
+
+  const columns = [
+    {
+      name: "date",
+      label: "Date"
+    },
+    {
+      name: "subject",
+      label: "Subject"
+    },
+    {
+      name: "course",
+      label: "Course, Year && Section",
+      options: {
+        customBodyRenderLite: (dataIndex) => {
+          const course = tableData[dataIndex].course;
+          const year = tableData[dataIndex].year;
+          const section = tableData[dataIndex].section;
+          return (
+            <>
+            {course} {year}{section}
+            </>
+          );
+        }
+      }
+    },
+    {
+      name: "attendee",
+      label: "No. of Attendees"
+    },
+    {
+      name: "recording_link",
+      label: "Link of Meet Recording",
+      options: {
+        customBodyRenderLite: (dataIndex) => {
+          const link = tableData[dataIndex].recording_link;
+          return (
+            <a href={link}>
+              <strong>Recording Link</strong>
+            </a>
+          );
+        }
+      }
+    },
+    {
+      name: "activity",
+      label: "Activities"
+    },
+    {
+      name: "meet_screenshots",
+      label: "Attachments",
+      options: {
+        customBodyRenderLite: (dataIndex) => {
+          return (
+            <div className="dropdown ml-auto text-center">
+              <div className="btn-link" data-toggle="dropdown">
+                <svg
+                  width="24px"
+                  height="24px"
+                  viewBox="0 0 24 24"
+                  version="1.1"
+                >
+                  <g
+                    stroke="none"
+                    strokeWidth={1}
+                    fill="none"
+                    fillRule="evenodd"
+                  >
+                    <rect x={0} y={0} width={24} height={24} />
+                    <circle fill="#000000" cx={5} cy={12} r={2} />
+                    <circle fill="#000000" cx={12} cy={12} r={2} />
+                    <circle fill="#000000" cx={19} cy={12} r={2} />
+                  </g>
+                </svg>
+              </div>
+              <div className="dropdown-menu dropdown-menu-right">
+                <a
+                  className="dropdown-item"
+                  href="attachment"
+                  data-toggle="modal"
+                  data-target="#attachment"
+                >
+                  Team Meet Screenshot
+                </a>
+                <a
+                  className="dropdown-item"
+                  href="attachment"
+                  data-toggle="modal"
+                  data-target="#attachment"
+                >
+                  Provided Activities
+                </a>
+              </div>
+            </div>
+          )
+        }
+      }
+    }
+  ]
+
+  const options={
+    selectableRows: false,
+    sort: true,
+    sortOrder: { name: 'date', direction: 'asc' }
+  }
+
   return (
     <>
-
       {/* Content */}
       <div className="content-body">
         <div className="sub-header">
@@ -79,9 +208,9 @@ render() {
               <div className="card">
                 <div className="card-header bg-light-blue">
                   <div className="col-xl-7 col-lg-12">
-                    <h4 className="h4 card-title">Week No.</h4>
+                    <h4 className="h4 card-title">{weekNo}</h4>
                   </div>
-                  <div className="col-xl-5 col-lg-12">
+                  {/* <div className="col-xl-5 col-lg-12">
                     <button
                       type="button"
                       className="float-right btn btn-rounded btn-info"
@@ -100,19 +229,13 @@ render() {
                       </span>
                       Print
                     </button>
-                  </div>
+                  </div> */}
                 </div>
                 <div className="card-body">
-
                   <div className="table-responsive">
-                    {/* <!-- Create the drop down filter --> */}
-                    <div className="category-filter" >
-                      <select id="categoryFilter" className="form-control" hidden>
-                        <option value="">Show All</option>
-                      </select>
-                    </div>
+                    <MUIDataTable columns={columns} data={tableData} options={options} />
                     {/* <!-- Set up the datatable --> */}
-                    <form>
+                    {/* <form>
                       <table
                         id="filterTable"
                         className="table"
@@ -312,7 +435,7 @@ render() {
                           </tr>
                         </tbody>
                       </table>
-                    </form>
+                    </form> */}
                   </div>
                   <div className="col-lg-12">
                     <div className="form-group mt-5">
@@ -391,7 +514,6 @@ render() {
       </div>
     </>
   );
-}
 };
 
 export default AdminWfarIndividualView;

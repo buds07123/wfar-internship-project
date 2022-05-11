@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 //Bootstrap and jQuery libraries
 import 'jquery/dist/jquery.min.js';
 //Datatable Modules
@@ -65,6 +66,10 @@ const FacultyArchives = () => {
   //   });
   // }
 
+  const navigate = useNavigate()
+  
+  const [restorebtn,setRestorebtn] = useState('')
+  const [updateTable, setUpdateTable] = useState(0)
   const [data, setData] = useState([])
 
   //Display Wfar archive Data
@@ -80,15 +85,20 @@ const FacultyArchives = () => {
       setData(data.empData)
       console.log(data.empData)
     })
-  }, [])
+  }, [updateTable])
 
-  // <th scope="col">School Year</th>
-  //                           <th scope="col">Semester</th>
-  //                           <th scope="col">Week No.</th>
-  //                           <th scope="col">Date</th>
-  //                           <th scope="col">Status</th>
-  //                           <th scope="col">Comments</th>
-  //                           <th scope="col">Action</th>
+  //toRestore
+  const toRestoreBtn = async () => {
+
+    await axios.put(`http://localhost:4000/api/toRestore/${restorebtn}`)
+      .then(res => {
+        setUpdateTable(updateTable + 1)
+      })
+  }
+
+  useEffect(() => {
+    toRestoreBtn()
+  },[restorebtn])
 
   const columns = [
     {
@@ -123,10 +133,10 @@ const FacultyArchives = () => {
           return (
             <div className="text-center">
               <button
-                type="button"
+                type="submit"
                 className="btn btn-success btn-xs sharp mr-1"
                 onClick={e => {
-                  alert(data[dataIndex]._id)
+                  setRestorebtn(data[dataIndex]._id)
                 }}
               >
                 <i className="fa fa-undo" />

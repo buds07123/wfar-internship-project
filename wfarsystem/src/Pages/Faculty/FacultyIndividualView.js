@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import AttachmentUpload from "../../Components/AttachmentUpload"
 
@@ -200,7 +200,19 @@ const FacultyIndividualView = () => {
     },
     {
       name: "course",
-      label: "Course",
+      label: "Course, Year && Section",
+      options: {
+        customBodyRenderLite: (dataIndex) => {
+          const course = tableData[dataIndex].course;
+          const year = tableData[dataIndex].year;
+          const section = tableData[dataIndex].section;
+          return (
+            <>
+            {course} {year}{section}
+            </>
+          );
+        }
+      }
     },
     {
       name: "attendee",
@@ -208,7 +220,17 @@ const FacultyIndividualView = () => {
     },
     {
       name: "recording_link",
-      label: "Link of Meet Recording"
+      label: "Link of Meet Recording",
+      options: {
+        customBodyRenderLite: (dataIndex) => {
+          const link = tableData[dataIndex].recording_link;
+          return (
+            <a href={link}>
+              <strong>Recording Link</strong>
+            </a>
+          );
+        }
+      }
     },
     {
       name: "activity",
@@ -316,7 +338,9 @@ const FacultyIndividualView = () => {
       deleteHandle()
       setUpdateTable(updateTable + 1)
     },
-    selectableRows: 'single'
+    selectableRows: 'single',
+    sort: true,
+    sortOrder: { name: 'date', direction: 'asc' }
   }
 
   //Archive Button 

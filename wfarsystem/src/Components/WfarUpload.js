@@ -3,7 +3,7 @@ import AttachmentUpload from "./AttachmentUpload";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Wfarupload = ({ schoolYear, sem }) => {
+const Wfarupload = ({ schoolYear, sem, weekNo }) => {
 
   const navigate = useNavigate()
 
@@ -103,8 +103,8 @@ const Wfarupload = ({ schoolYear, sem }) => {
                   <div className="form-group row">
                     <label className="col-sm-3 col-form-label">Week No.</label>
                     <div className="col-sm-9">
-                      <select className="form-control default-select form-control-lg" onChange={(e) => setWeek_number(e.target.value)} value={week_number} required>
-                        <option selected disabled>Select a week</option>
+                      <select className="form-control default-select form-control-lg" onChange={(e) => setWeek_number(e.target.value)} defaultValue={week_number} required>
+                        <option value={week_number} selected disabled>Select a week</option>
                         <option>Week 1</option>
                         <option>Week 2</option>
                         <option>Week 3</option>
@@ -119,10 +119,14 @@ const Wfarupload = ({ schoolYear, sem }) => {
                         <option>Week 12</option>
                         <option>Week 13</option>
                         <option>Week 14</option>
-                        <option>Week 15</option>
-                        <option>Week 16</option>
-                        <option>Week 17</option>
-                        <option>Week 18</option>
+                        {weekNo === "18 Weeks" ?
+                          <>
+                            <option>Week 15</option>
+                            <option>Week 16</option>
+                            <option>Week 17</option>
+                            <option>Week 18</option>
+                          </> : <option>Week 15</option>}
+                        
                       </select>
                     </div>
                   </div>

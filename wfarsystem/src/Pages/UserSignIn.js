@@ -36,7 +36,7 @@ const UserSignIn = () => {
         }else if(error.response.data.err === "The email or username is not existing"){
             alert('The email or username is not existing.')
         }else if(error.response.data.err === "Verify your account first in your email account"){
-            alert('Verify your account first in your email account.')
+            alert('Your account is not yet activated. Please check your email for verification.')
         }
     }
 }

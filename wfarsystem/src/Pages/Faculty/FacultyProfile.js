@@ -13,6 +13,8 @@ const FacultyProfile = () => {
 
   const [empData, setempData] = useState('')
   const [image, setImage] = useState('');
+  const [emp_picture,setEmp_picture] = useState('')
+  const [count,setCount] = useState(0)
 
 
   const employeeData = async () => {
@@ -27,7 +29,29 @@ const FacultyProfile = () => {
 
   const loadImage = (event) => {
     setImage(URL.createObjectURL(event.target.files[0]));
+    setEmp_picture(event.target.files[0])
+    setCount(count + 1)
   };
+
+  const editProfilePic = async () => {
+
+    const formData = new FormData()
+    formData.set('emp_picture', emp_picture)
+
+    await axios.put(`http://localhost:4000/api/editProfilePic/${empData._id}`,formData)
+    .then(res => {
+      if(res.data.msg === "Picture Successfully Updated"){
+        alert("Picture Successfully Updated!")
+      }
+    })
+  }
+
+  useEffect(() => {
+    if(count >= 1){
+      editProfilePic()
+    }
+    
+  },[count])
 
   return (
     <React.Fragment>
@@ -53,7 +77,7 @@ const FacultyProfile = () => {
                           <input
                             type="file"
                             id="imageUpload"
-                            accept=".png, .jpg, .jpeg"
+                            name="emp_picture"
                             onChange={loadImage}
                           />
                           <label htmlFor="imageUpload" />
@@ -90,7 +114,7 @@ const FacultyProfile = () => {
             {/* Overview */}
             <Profileoverview />
             {/* General Account Settings */}
-            <ProfileSettings />
+            <ProfileSettings photo={emp_picture} />
           </div>
         </div>
       </div>
