@@ -129,6 +129,7 @@ const FacultyIndividualView = () => {
   const location = useLocation()
   const wfar_id = location.state.wfarId
   const wfar_weekNo = location.state.wfarWeekNo
+  const wfar_status = location.state.wfarStatus
 
   const [updateTable, setUpdateTable] = useState(0)
   const [tableData, setTableData] = useState([])
@@ -144,6 +145,7 @@ const FacultyIndividualView = () => {
   useEffect(() => {
     getData().then((data) => {
       setTableData(data.wfarId[0].info)
+      console.log(data.wfarId[0].info)
     })
   }, [updateTable])
 
@@ -158,8 +160,8 @@ const FacultyIndividualView = () => {
   const [attendee, setAttendee] = useState('')
   const [recording_link, setRecording_link] = useState('')
   const [activity, setActivity] = useState('')
-  const [meet_screenshots, setMeet_screenshots] = useState('')
-  const [act_screenshots, setAct_screenshots] = useState('')
+  const [meet_screenshots, setMeet_screenshots] = useState([])
+  const [act_screenshots, setAct_screenshots] = useState([])
 
   const updateData = async (e) => {
     e.preventDefault()
@@ -176,7 +178,7 @@ const FacultyIndividualView = () => {
       activity
     }
 
-    await axios.put(`http://localhost:4000/api/updateOneWfarInfo/${_id}`,formData)
+    await axios.put(`http://localhost:4000/api/updateOneWfarInfo/${_id}`, formData)
       .then(res => {
         if (res.data.msg === "Wfar Successfully Updated") {
           alert('Wfar Successfully Updated.')
@@ -208,7 +210,7 @@ const FacultyIndividualView = () => {
           const section = tableData[dataIndex].section;
           return (
             <>
-            {course} {year}{section}
+              {course} {year}{section}
             </>
           );
         }
@@ -242,7 +244,10 @@ const FacultyIndividualView = () => {
       options: {
         customBodyRenderLite: (dataIndex, rowIndex) => {
           return (
-            <div className="dropdown ml-auto text-center">
+            <div className="dropdown ml-auto text-center" onClick={e => {
+              setMeet_screenshots(tableData[dataIndex].meet_screenshots)
+              setAct_screenshots(tableData[dataIndex].act_screenshots)
+            }}>
               <div className="btn-link" data-toggle="dropdown">
                 <svg
                   width="24px"
@@ -274,9 +279,9 @@ const FacultyIndividualView = () => {
                 </a>
                 <a
                   className="dropdown-item"
-                  href="attachment"
+                  href="actattachment"
                   data-toggle="modal"
-                  data-target="#attachment"
+                  data-target="#actattachment"
                 >
                   Provided Activities
                 </a>
@@ -322,14 +327,14 @@ const FacultyIndividualView = () => {
 
 
   //to delete one wfar record
-  const [rowID,setRowID] = useState('')
+  const [rowID, setRowID] = useState('')
 
   const deleteHandle = async () => {
     await axios.put(`http://localhost:4000/api/deleteOneWfar/${wfar_id}/${rowID}`)
   }
 
   const options = {
-    onRowsSelect : (curRowSelected, allRowsSelected) => {
+    onRowsSelect: (curRowSelected, allRowsSelected) => {
       const arrNum = curRowSelected[0].dataIndex
       setRowID(tableData[arrNum]._id)
       console.log(tableData[arrNum]._id)
@@ -352,7 +357,7 @@ const FacultyIndividualView = () => {
         console.log(res)
         navigate("/FacultyOwnSubmissions")
       })
-  } 
+  }
 
   return (
     <React.Fragment>
@@ -428,7 +433,7 @@ const FacultyIndividualView = () => {
                 <div className="card-body">
                   <div className="bootstrap-badge mb-5 text-left">
                     <span className="badge badge-xl light badge-success">
-                      Status: OK
+                      Status: {wfar_status}
                     </span>
                   </div>
                   <div className="table-responsive">
@@ -442,108 +447,6 @@ const FacultyIndividualView = () => {
                     {/* <!-- Set up the datatable --> */}
 
                     <MUIDataTable columns={columns} data={tableData} options={options} />
-
-
-                    {/* 
-                        <table
-                          id="filterTable"
-                          className="table"
-                          style={{ minWidth: 845 }}
-                        >
-                          <thead className="thead-light">
-                            <tr>
-                              <th scope="col">Date</th>
-                              <th scope="col">Subject</th>
-                              <th scope="col">
-                                Course, Year, <br /> Section
-                              </th>
-                              <th scope="col">
-                                No. of <br /> Attendees
-                              </th>
-                              <th scope="col">
-                                Link of Meet <br /> Recording
-                              </th>
-                              <th scope="col">
-                                Learning <br /> Activities
-                              </th>
-                              <th scope="col">Attachments</th>
-                              <th scope="col">Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>03/03/2022</td>
-                              <td>CAP 1 - Capstone Project and Research 1</td>
-                              <td>BSIT 3K</td>
-                              <td>24</td>
-                              <td>
-                                <a href="https://bulsumain.sharepoint.com/:v:/s/IT312-BSIT3K/EWku0Ug4rZxHkU1uBjOh6W4Bmi8MY0lxrG1mwhL23ExkAQ?e=Ve2uV">
-                                  <strong>Recording Link</strong>
-                                </a>
-                              </td>
-                              <td>
-                                1. Combined the orientation of IT 312 because there was a
-                                curriculum revision meeting held at the school on their
-                                supposed schedule. 03/02/2022.
-                              </td>
-                              <td>
-                                <div className="dropdown ml-auto text-center">
-                                  <div className="btn-link" data-toggle="dropdown">
-                                    <svg
-                                      width="24px"
-                                      height="24px"
-                                      viewBox="0 0 24 24"
-                                      version="1.1"
-                                    >
-                                      <g
-                                        stroke="none"
-                                        strokeWidth={1}
-                                        fill="none"
-                                        fillRule="evenodd"
-                                      >
-                                        <rect x={0} y={0} width={24} height={24} />
-                                        <circle fill="#000000" cx={5} cy={12} r={2} />
-                                        <circle fill="#000000" cx={12} cy={12} r={2} />
-                                        <circle fill="#000000" cx={19} cy={12} r={2} />
-                                      </g>
-                                    </svg>
-                                  </div>
-                                  <div className="dropdown-menu dropdown-menu-right">
-                                    <a
-                                      className="dropdown-item"
-                                      href="attachment"
-                                      data-toggle="modal"
-                                      data-target="#attachment"
-                                    >
-                                      Team Meet Screenshot
-                                    </a>
-                                    <a
-                                      className="dropdown-item"
-                                      href="attachment"
-                                      data-toggle="modal"
-                                      data-target="#attachment"
-                                    >
-                                      Provided Activities
-                                    </a>
-                                  </div>
-                                </div>
-                              </td>
-                              <td>
-                                <div className="text-center">
-                                  <button
-                                    type="button"
-                                    data-toggle="modal"
-                                    data-target="#editEntry"
-                                    className="btn btn-info btn-xs sharp mr-1"
-                                  >
-                                    <i className="fa fa-edit" />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                       */}
 
                   </div>
                   <div className="col-lg-12">
@@ -583,42 +486,75 @@ const FacultyIndividualView = () => {
               <div className="attachments">
                 <h5 className="h5 text-primary d-inline">Uploaded Screenshot/s</h5>
                 <div className="row mt-4 sp4" id="lightgallery">
-                  <a
-                    href="assets/img/sample/img1.jpg"
-                    data-exthumbimage="assets/img/sample/img1.jpg"
-                    data-src="assets/img/sample/img1.jpg"
-                    className="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6"
-                  >
-                    <img
-                      src="assets/img/sample/img1.jpg"
-                      alt="Screenshot"
-                      className="img-fluid"
-                    />
-                  </a>
-                  <a
-                    href="assets/img/sample/img2.jpg"
-                    data-exthumbimage="assets/img/sample/img2.jpg"
-                    data-src="assets/img/sample/img2.jpg"
-                    className="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6"
-                  >
-                    <img
-                      src="assets/img/sample/img2.jpg"
-                      alt="Screenshot"
-                      className="img-fluid"
-                    />
-                  </a>
-                  <a
-                    href="assets/img/sample/img3.jpg"
-                    data-exthumbimage="assets/img/sample/img3.jpg"
-                    data-src="assets/img/sample/img3.jpg"
-                    className="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6"
-                  >
-                    <img
-                      src="assets/img/sample/img3.jpg"
-                      alt="Screenshot"
-                      className="img-fluid"
-                    />
-                  </a>
+
+                  {meet_screenshots.map((meet_screenshots) => {
+                    return (
+                      <a
+                        href={meet_screenshots}
+                        data-exthumbimage={meet_screenshots}
+                        data-src={meet_screenshots}
+                        className="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6"
+                      >
+                        <img
+                          src={meet_screenshots}
+                          alt="Screenshot"
+                          className="img-fluid"
+                        />
+                      </a>
+                    )
+                  })}
+                  
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-danger light"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+      {/* ACT_ATTACHMENT MODAL */}
+      <div className="modal fade" id="actattachment">
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="h5 modal-title">Attachments</h5>
+              <button type="button" className="close" data-dismiss="modal">
+                <span>×</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="attachments">
+                <h5 className="h5 text-primary d-inline">Uploaded Screenshot/s</h5>
+                <div className="row mt-4 sp4" id="lightgallery">
+
+                  {act_screenshots.map((act_screenshots) => {
+                    return (
+                      <a
+                        href={act_screenshots}
+                        data-exthumbimage={act_screenshots}
+                        data-src={act_screenshots}
+                        className="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6"
+                      >
+                        <img
+                          src={act_screenshots}
+                          alt="Screenshot"
+                          className="img-fluid"
+                        />
+                      </a>
+                    )
+                  })}
+                  
+                  
+                  
                 </div>
               </div>
             </div>
@@ -796,7 +732,7 @@ const FacultyIndividualView = () => {
                                     className="card-body d-flex flex-wrap align-items-center"
                                     id="container"
                                   >
-                                    <AttachmentUpload />
+                                    {/* <AttachmentUpload /> */}
                                   </div>
                                 </div>
                               </div>
@@ -811,7 +747,7 @@ const FacultyIndividualView = () => {
                                   </div>
                                   <div className="card-body d-flex flex-wrap justify-content-start"
                                     id="act-container">
-                                    <AttachmentUpload />
+                                    {/* <AttachmentUpload /> */}
                                   </div>
                                 </div>
                               </div>

@@ -335,10 +335,53 @@ exports.editAssignTO = async (req,res) => {
         const id = req.params.id
         const {ac_inCharge,dh_inCharge} = req.body
 
-        await employeeModel.findByIdAndUpdate(id, {
+        const updateIncharge = await employeeModel.findByIdAndUpdate(id, {
             ac_inCharge,
             dh_inCharge
         })
+
+
+        return res.status(200).json({ msg: "Successfully updated" })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.toAssign = async (req,res) => {
+    try {
+        const id = req.params.id
+        const {empID,fname,mname,lname,position} = req.body
+
+
+        const checkID = await employeeModel.findOne({_id: id, "assignTo.empID": empID})
+
+        if (checkID) {
+            await wfarModel.findOneAndUpdate({ "assignTo.empID": empID },
+                {
+                    $set: {
+                        'assignTo.$.fname': fname,
+                        'assignTo.$.mname': mname,
+                        'assignTo.$.lname': lname,
+                        'assignTo.$.position': position,
+                    }
+                }
+            )
+        }else{
+            await employeeModel.updateOne({ _id: id },
+                {
+                    $push: {
+                        "assignTo": {
+                            empID,
+                            fname,
+                            mname,
+                            lname,
+                            position
+                        }
+                    }
+                }
+            )
+        }
+
 
         return res.status(200).json({ msg: "Successfully updated" })
     } catch (error) {

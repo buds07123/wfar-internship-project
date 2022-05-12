@@ -38,7 +38,7 @@ const Profileoverview = () => {
                   </div>
                   <p className="mt-2 fs-14">User Level/Position: </p>
                   <div className="d-flex">
-                    <h3 className="font-w600">*{empData.position}*</h3>
+                    <h3 className="font-w600">*{empData.updatedPosition}*</h3>
                   </div>
                   <p className="mt-2 fs-14">Username:</p>
                   <div className="d-flex">

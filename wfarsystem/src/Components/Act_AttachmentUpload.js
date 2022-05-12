@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 
-const AttachmentUpload = ({setMeet_screenshots}) => {
+const Act_AttachmentUpload = ({setAct_screenshots}) => {
   const [selectedImages, setSelectedImages] = useState([]);
 
   const onSelectFile = (event) => {
     const selectedFiles = event.target.files;
     const selectedFilesArray = Array.from(selectedFiles);
   
-    setMeet_screenshots(event.target.files)
+    setAct_screenshots(event.target.files)
 
     const imagesArray = selectedFilesArray.map((file) => {
 
@@ -25,7 +25,7 @@ const AttachmentUpload = ({setMeet_screenshots}) => {
             <input
               className="d-none"
               type="file"
-              name="meet_screenshots"
+              name="act_screenshots"
               onChange={onSelectFile}
               multiple
               required
@@ -66,4 +66,4 @@ const AttachmentUpload = ({setMeet_screenshots}) => {
   );
 };
 
-export default AttachmentUpload;
+export default Act_AttachmentUpload;

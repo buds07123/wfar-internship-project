@@ -98,12 +98,16 @@ function App() {
 
         <Route path="/" element={<Faculty />} >
           <Route path="/Faculty" element={<FacultyHome />} />
+          <Route path="/ACDH" element={<ACDHDashboard />} />
           <Route path="/FacultyProfile" element={<FacultyProfile />} />
           <Route path="/FacultyNotifications" element={<FacultyNotifications />} />
           <Route path="/FacultyArchives" element={<FacultyArchives />} />
           <Route path="/FacultyOwnSubmissions" element={<FacultyOwnSubmissions />} />
           <Route path="/FacultyUpload" element={<FacultyUpload />} />
           <Route path="/FacultyIndividualView" element={<FacultyIndividualView />} />
+          <Route path="/ACDHAccountRequest" element={<ACDHAccountRequest />} />
+          <Route path="/ACDHAllHandle" element={<ACDHAllHandle />} />
+          <Route path="/ACDHReport" element={<ACDHReport />} />
         </Route>
 
         <Route path="/" element={<ACDH />} >

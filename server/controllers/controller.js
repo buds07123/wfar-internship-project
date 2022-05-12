@@ -1,7 +1,5 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const nodeMailer = require('nodemailer')
-const crypto = require('crypto')
 
 //models
 const employeeModel = require('../models/Employee')
@@ -12,6 +10,7 @@ const batchModel = require('../models/Admin/Batch')
 
 //upload picture
 const cloudinary = require('../cloudinary/cloudinary')
+const { array } = require('../cloudinary/multer')
 
 //reqistration
 exports.register = async (req, res) => {
@@ -218,13 +217,57 @@ exports.changePassword = async (req, res) => {
 }
 
 
+//upload multiple images
+const cloudinaryImageUploadMethodMeet = async file => {
+    return new Promise(resolve => {
+        cloudinary.uploader.upload(file, (err, res) => {
+            if (err) return res.status(500).send("upload image error")
+            resolve({
+                res: res.secure_url
+            })
+        }
+        )
+    })
+}
+
+const cloudinaryImageUploadMethodAct = async file => {
+    return new Promise(resolve => {
+        cloudinary.uploader.upload(file, (err, res) => {
+            if (err) return res.status(500).send("upload image error")
+            resolve({
+                res: res.secure_url
+            })
+        }
+        )
+    })
+}
+  
+
 //---------WFAR(FACULTY)
 exports.postWfar = async (req, res) => {
     try {
         //wfar data
         const emp_id = req.id
         const { school_year, semester, comments } = req.body
-        const { week_number, date, subject, course, year, section, attendee, recording_link, activity, meet_screenshots, act_screenshots } = req.body
+        const { week_number, date, subject, course, year, section, attendee, recording_link, activity } = req.body
+
+        //uploadmultiple images
+        const urls = [];
+        const files = req.files["meet_screenshots"];
+        for (const file of files) {
+          const { path } = file;
+          const newPath = await cloudinaryImageUploadMethodMeet(path);
+          urls.push(newPath);
+        }
+
+        //act_screenshots
+        const actScreenshot_urls = [];
+        const actScreenshot_urls_files = req.files["act_screenshots"];
+        for (const file of actScreenshot_urls_files) {
+          const { path } = file;
+          const newPath = await cloudinaryImageUploadMethodAct(path);
+          actScreenshot_urls.push(newPath);
+        }
 
         //employee id
         const id = await employeeModel.findById(emp_id)
@@ -246,8 +289,8 @@ exports.postWfar = async (req, res) => {
                         attendee,
                         recording_link,
                         activity,
-                        meet_screenshots,
-                        act_screenshots
+                        meet_screenshots: urls.map( url => url.res ),
+                        act_screenshots: actScreenshot_urls.map( url => url.res )
                     }
                 }
             })
@@ -296,8 +339,8 @@ exports.postWfar = async (req, res) => {
                         attendee,
                         recording_link,
                         activity,
-                        meet_screenshots,
-                        act_screenshots
+                        meet_screenshots: urls.map( url => url.res ),
+                        act_screenshots: actScreenshot_urls.map( url => url.res )
                     }
                 ]
             }).save()
@@ -533,6 +576,31 @@ exports.toRestore = async (req, res) => {
         await wfarModel.findByIdAndUpdate(id, { isActive: true })
 
         return res.status(200).json({ msg: "Successfully updated" })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+//Accont Request
+exports.allReqAcc = async (req,res) => {
+    try {
+        const id = req.id
+        const empData = await employeeModel.find( {_id:{$ne: id} })
+
+        return res.status(200).json({empData})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+//Handle Faculty
+exports.handleFaculty = async (req,res) => {
+    try {
+        const id = req.id
+        const empData = await employeeModel.find({_id: id});
+
+        return res.status(200).json({empData})
     } catch (error) {
         console.log(error)
     }

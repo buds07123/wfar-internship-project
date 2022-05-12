@@ -321,13 +321,13 @@ const AdminPromoteDemote = () => {
                 <div className="row mt-4 sp4">
                   <select className="form-control default-select form-control-lg"
                    onChange={(e) => setUpdatedPosition(e.target.value)}
-                   value={updatedPosition}
+                   defaultValue={updatedPosition}
                    >
-                    <option value selected disabled hidden>
+                    <option value={updatedPosition} selected disabled>
                       Choose a position
                     </option>
-                    <option value="Department Head">Department Head</option>
-                    <option value="Area Chair">Area Chair</option>
+                    <option>Department Head</option>
+                    <option>Area Chair</option>
                   </select>
                 </div>
                 <div className="modal-footer">

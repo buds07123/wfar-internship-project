@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AttachmentUpload from "./AttachmentUpload";
+import Act_AttachmentUpload from "./Act_AttachmentUpload";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -16,74 +17,43 @@ const Wfarupload = ({ schoolYear, sem, weekNo }) => {
   const [attendee, setAttendee] = useState('')
   const [recording_link, setRecording_link] = useState('')
   const [activity, setActivity] = useState('')
-  const [meet_screenshots, setMeet_screenshots] = useState('')
-  const [act_screenshots, setAct_screenshots] = useState('')
+  const [meet_screenshots, setMeet_screenshots] = useState([])
+  const [act_screenshots, setAct_screenshots] = useState([])
 
   const [school_year, setSchoolYear] = useState(schoolYear)
   const [semester, setSem] = useState(sem)
 
   const postWfar = async (e) => {
     e.preventDefault()
-    // const formData = new FormData()
+    const formData = new FormData()
 
-    // formData.set('week_number', week_number)
-    // formData.set('date', date)
-    // formData.set('subject', subject)
-    // formData.set('course', course)
-    // formData.set('year', year)
-    // formData.set('section', section)
-    // formData.set('attendee', attendee)
-    // formData.set('recording_link', recording_link)
-    // formData.set('activity', activity)
-    // formData.set('meet_screenshots', meet_screenshots)
-    // formData.set('act_screenshots', act_screenshots)
-
-
-    //POST WFAR DATA
-    const formData = {
-      school_year,
-      semester,
-      week_number,
-      date,
-      subject,
-      course,
-      year,
-      section,
-      attendee,
-      recording_link,
-      activity
+    formData.append('school_year', school_year)
+    formData.append('semester', semester)
+    formData.append('week_number', week_number)
+    formData.append('date', date)
+    formData.append('subject', subject)
+    formData.append('course', course)
+    formData.append('year', year)
+    formData.append('section', section)
+    formData.append('attendee', attendee)
+    formData.append('recording_link', recording_link)
+    formData.append('activity', activity)
+    for (const key of Object.keys(meet_screenshots)) {
+      formData.append('meet_screenshots', meet_screenshots[key])
     }
+    for (const key of Object.keys(act_screenshots)) {
+      formData.append('act_screenshots', act_screenshots[key])
+    }
+    
 
     //save wfar
     await axios.post("http://localhost:4000/api/postWfar", formData)
       .then(res => {
-        console.log(res)
+        alert('WFAR Successfully uploaded.')
         navigate("/FacultyOwnSubmissions")
       })
       .catch(err => { console.log(err) })
   }
-
-  // const postfullWfar = async (e) => {
-  //   e.preventDefault()
-
-  //   setSchoolYear(schoolYear)
-  //   setSem(sem)
-
-  //   //POST FULL WFAR DATA
-  //   const formFullWfarData = {
-  //     school_year,
-  //     semester,
-  //     week_number
-  //   }
-
-  //   await axios.post("http://localhost:4000/api/postFullWfar", formFullWfarData)
-  //     .then(res => {
-  //       console.log(res)
-  //       postWfar()
-  //       navigate("/FacultyOwnSubmissions")
-  //     })
-  //     .catch(err => { console.log(err) })
-  // }
 
   return (
     <div>
@@ -238,7 +208,7 @@ const Wfarupload = ({ schoolYear, sem, weekNo }) => {
                             className="card-body d-flex flex-wrap align-items-center"
                             id="container"
                           >
-                            <AttachmentUpload />
+                            <AttachmentUpload setMeet_screenshots={setMeet_screenshots} />
                           </div>
                         </div>
                       </div>
@@ -253,7 +223,7 @@ const Wfarupload = ({ schoolYear, sem, weekNo }) => {
                           </div>
                           <div className="card-body d-flex flex-wrap justify-content-start"
                             id="act-container">
-                            <AttachmentUpload />
+                            <Act_AttachmentUpload setAct_screenshots={setAct_screenshots} />
                           </div>
                         </div>
                       </div>

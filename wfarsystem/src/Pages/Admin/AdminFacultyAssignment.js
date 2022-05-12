@@ -13,60 +13,6 @@ import axios from "axios";
 axios.defaults.withCredentials = true
 
 const AdminFacultyAssignment = () => {
-  // componentDidMount() {
-  //   //initialize datatable
-  //   $("document").ready(function () {
-  //     $("#filterTable").dataTable({
-  //       retrieve: true,
-  //       paging: true,
-  //       searching: true,
-  //       orderCellsTop: true,
-  //       language: {
-  //         paginate: {
-  //           next: '<i class="fa fa-angle-double-right" aria-hidden="true"></i>',
-  //           previous: '<i class="fa fa-angle-double-left" aria-hidden="true"></i>',
-  //         },
-  //       },
-  //     });
-
-  //     //Get a reference to the new datatable
-  //     var table = $("#filterTable").DataTable();
-
-  //     //Take the category filter drop down and append it to the datatables_filter div.
-  //     //You can use this same idea to move the filter anywhere withing the datatable that you want.
-  //     $("#filterTable_filter.dataTables_filter").append($("#categoryFilter"));
-
-  //     //Get the column index for the Category column to be used in the method below ($.fn.dataTable.ext.search.push)
-  //     //This tells datatables what column to filter on when a user selects a value from the dropdown.
-  //     //It's important that the text used here (Category) is the same for used in the header of the column to filter
-  //     var categoryIndex = 4;
-  //     $("#filterTable th").each(function (i) {
-  //       if ($($(this)).html() == "Category") {
-  //         categoryIndex = i;
-  //         return false;
-  //       }
-  //     });
-
-  //     //Use the built in datatables API to filter the existing rows by the Category column
-  //     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-  //       var selectedItem = $("#categoryFilter").val();
-  //       var category = data[categoryIndex];
-  //       if (selectedItem === "" || category.includes(selectedItem)) {
-  //         return true;
-  //       }
-  //       return false;
-  //     });
-
-  //     //Set the change event for the Category Filter dropdown to redraw the datatable each time
-  //     //a user selects a new filter.
-  //     $("#categoryFilter").change(function (e) {
-  //       table.draw();
-  //     });
-
-  //     table.draw();
-  //   });
-  // }
-
   const [updateTable, setUpdateTable] = useState(0)
   const [data, setData] = useState([])
   const [empID, setEmpID] = useState('')
@@ -115,6 +61,13 @@ const AdminFacultyAssignment = () => {
     })
   }, [])
 
+  //toAssign
+  const [hanldeID,setHandleID] = useState('')
+  const [fname,setFName] = useState('')
+  const [mname,setMName] = useState('')
+  const [lname,setLName] = useState('')
+  const [position,setPos] = useState('')
+  
 
   //Edit Asign to..
   const [ac_inCharge,setAc_inCharge] = useState('')
@@ -122,6 +75,17 @@ const AdminFacultyAssignment = () => {
 
   const editAsignTo = async (e) => {
     e.preventDefault()
+
+    const empId = {
+      empID,
+      fname,
+      mname,
+      lname,
+      position
+    }
+
+    await axios.put(`http://localhost:4000/api/toAssign/${hanldeID}`,empId)
+
 
     const formData = {
       ac_inCharge,
@@ -169,6 +133,10 @@ const AdminFacultyAssignment = () => {
                 className="btn btn-success mr-1"
                 onClick={e => {
                   setEmpID(data[dataIndex]._id)
+                  setFName(data[dataIndex].fname)
+                  setMName(data[dataIndex].mname)
+                  setLName(data[dataIndex].lname)
+                  setPos(data[dataIndex].updatedPosition)
                   setAc_inCharge(data[dataIndex].ac_inCharge)
                   setDh_inCharge(data[dataIndex].dh_inCharge)
                 }}
@@ -208,73 +176,7 @@ const AdminFacultyAssignment = () => {
                 </div>
                 <div className="card-body">
                   <div className="table-responsive">
-                    {/* <!-- Create the drop down filter --> */}
-                    {/* <div className="category-filter" >
-                        <select id="categoryFilter" className="form-control" hidden>
-                          <option value="">Show All</option>
-                        </select>
-                      </div> */}
                     <MUIDataTable columns={columns} data={data} options={options} />
-                    {/* <!-- Set up the datatable --> */}
-                    {/* <form>
-                        <table
-                          id="filterTable"
-                          className="table"
-                          style={{ minWidth: "845px" }}
-                        >
-                          <thead className="thead-light">
-                            <tr>
-                              <th scope="col">Employee Number</th>
-                              <th scope="col">Faculty Name</th>
-                              <th scope="col">Department</th>
-                              <th scope="col">Area Chair in Charge</th>
-                              <th scope="col">Department Head In Charge</th>
-                              <th scope="col">Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>2018107260</td>
-                              <td>Juan dela Cruz</td>
-                              <td>BSIT</td>
-                              <td>None</td>
-                              <td>Rosemarie M. Bautista, DIT</td>
-                              <td>
-                                <div className="d-flex">
-                                  <button
-                                    type="button"
-                                    data-toggle="modal"
-                                    data-target="#assign"
-                                    className="btn btn-success mr-1"
-                                  >
-                                    Assign
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>2018234541</td>
-                              <td>Maria Bautista</td>
-                              <td>BLIS</td>
-                              <td>Gabriel Galang</td>
-                              <td>Rosemarie M. Bautista, DIT</td>
-                              <td>
-                                <div className="d-flex">
-                                  <button
-                                    type="button"
-                                    data-toggle="modal"
-                                    data-target="#assign"
-                                    className="btn btn-success mr-1"
-                                  >
-                                    Assign
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </form> */}
-
                   </div>
                 </div>
               </div>
@@ -299,7 +201,14 @@ const AdminFacultyAssignment = () => {
               <form onSubmit={editAsignTo}>
                 <div className="row mt-4 sp4">
                   <select className="form-control default-select form-control-lg" 
-                    onChange={(e) => setAc_inCharge(e.target.value)}
+                    onChange={(e) => {
+                      setAc_inCharge(e.target.value)
+                      const index = e.target.selectedIndex;
+                      const el = e.target.childNodes[index]
+                      const id = el.getAttribute('data-id');  
+                      setHandleID(id)
+                      console.log(e.target.value)
+                    }}
                     defaultValue={ac_inCharge}
                     >
                     <option value={ac_inCharge} selected disabled hidden>
@@ -308,13 +217,20 @@ const AdminFacultyAssignment = () => {
                     {AC.map((ac) => {
                       return (
                         <>
-                          <option value={ac.fname +" "+ ac.mname +" "+ ac.lname}>{ac.fname} {ac.mname} {ac.lname}</option>
+                          <option data-id={ac._id} value={ac.fname +" "+ ac.mname +" "+ ac.lname}>{ac.fname} {ac.mname} {ac.lname}</option>
                         </>
                       )
                     })}
                   </select>
                   <select className="form-control default-select form-control-lg mt-4"
-                    onChange={(e) => setDh_inCharge(e.target.value)}
+                    onChange={(e) => {
+                      setDh_inCharge(e.target.value)
+                      const index = e.target.selectedIndex;
+                      const el = e.target.childNodes[index]
+                      const id = el.getAttribute('data-id');  
+                      setHandleID(id)
+                      console.log(id)
+                    }}
                     defaultValue={dh_inCharge}
                   >
                     <option value={dh_inCharge} selected disabled hidden>
@@ -323,7 +239,7 @@ const AdminFacultyAssignment = () => {
                     {DH.map((dh) => {
                       return (
                         <>
-                          <option value={dh.fname +" "+ dh.mname +" "+ dh.lname}>{dh.fname} {dh.mname} {dh.lname}</option>
+                          <option data-id={dh._id} value={dh.fname +" "+ dh.mname +" "+ dh.lname}>{dh.fname} {dh.mname} {dh.lname}</option>
                         </>
                       )
                     })}

@@ -26,13 +26,16 @@ const upload = require('../cloudinary/multer')
 // router.get('/refresh',refreshToken,verifyToken,controller.getEmpInfo)
 // router.post('/postFullWfar', verifyToken, controller.postFullWfar)
 
+
+
+//FACULTY/ACDH
 router.post('/register', upload.fields([{name: "emp_picture"}, {name: "signature"}]) , controller.register)
 router.post('/login', controller.login)
 router.get('/getEmpInfo', verifyToken ,controller.getEmpInfo)  
 router.put('/editProfilePic/:id', upload.single('emp_picture') ,controller.editProfilePic)
 router.put('/editProfile/:id', controller.editProfile)
 router.put('/changePassword/:id', controller.changePassword)
-router.post('/postWfar', verifyToken, controller.postWfar )    
+router.post('/postWfar', upload.fields([{name: "meet_screenshots"}, {name: "act_screenshots"}]) , verifyToken, controller.postWfar )    
 router.get('/findWeekNo/:weekNo', controller.findWeekNo)
 router.get('/getWfarInfo/:schoolyear/:sem', verifyToken, controller.getWfarInfo)
 router.get('/getFullWfarInfo/:id', controller.getFullWfarInfo)
@@ -41,6 +44,8 @@ router.put('/deleteOneWfar/:id/:rowID', controller.deleteOneWfar)
 router.put('/wfarArchive/:id', controller.wfarArchive)
 router.get('/getAllArchiveData', verifyToken, controller.getAllArchiveData)
 router.put('/toRestore/:id', controller.toRestore)
+router.get('/allReqAcc', verifyToken, controller.allReqAcc)
+router.get('/handleFaculty', verifyToken, controller.handleFaculty)
 router.post('/logout',controller.logout)      
 
 
@@ -65,6 +70,7 @@ router.get('/getAllFaculty', adminController.getAllFaculty)
 router.get('/getAllAC', adminController.getAllAC)
 router.get('/getAllDH', adminController.getAllDH)
 router.put('/editAssignTO/:id', adminController.editAssignTO)
+router.put('/toAssign/:id' , adminController.toAssign)
 
 router.get('/getAllWfar/:id', adminController.getAllWfar)
 router.get('/getWfarsPerWeek/:id', adminController.getWfarsPerWeek)

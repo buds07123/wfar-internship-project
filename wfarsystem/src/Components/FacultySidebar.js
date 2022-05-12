@@ -38,22 +38,43 @@ const FacultySidebar = () => {
           </div>
           <ul className="metismenu" id="menu">
             <li className="nav-label first">Main Menu</li>
-            <li
-              className={
-                isSideClicked === "home" ? "mm-active" : ""
-              }
-            >
-              <NavLink exact to="/Faculty"
-                className="ai-icon"
-                aria-expanded="false"
-                onClick={
-                  () => { setSideClicked("home") }
+
+            {empData.updatedPosition == "Faculty" ? <>
+              <li
+                className={
+                  isSideClicked === "home" ? "mm-active" : ""
                 }
               >
-                <i className="flaticon-141-home" />
-                <span className="nav-text">Home</span>
-              </NavLink>
-            </li>
+                <NavLink exact to="/Faculty"
+                  className="ai-icon"
+                  aria-expanded="false"
+                  onClick={
+                    () => { setSideClicked("home") }
+                  }
+                >
+                  <i className="flaticon-141-home" />
+                  <span className="nav-text">Home</span>
+                </NavLink>
+              </li>
+            </> : <>
+              <li
+                className={
+                  isSideClicked === "Dashboard" ? "mm-active" : ""
+                }
+              >
+                <NavLink exact to="/ACDH"
+                  className="ai-icon"
+                  aria-expanded="false"
+                  onClick={
+                    () => { setSideClicked("Dashboard") }
+                  }
+                >
+                  <i className="flaticon-001-monitor" />
+                  <span className="nav-text">Dashboard</span>
+                </NavLink>
+              </li>
+            </>}
+
             <li
               className={
                 isSideClicked === "profile" ? "mm-active" : ""
@@ -119,6 +140,61 @@ const FacultySidebar = () => {
                 <span className="nav-text">Archives</span>
               </NavLink>
             </li>
+
+            {empData.updatedPosition == "Faculty" ? '' :
+              <>
+                <li className="nav-label">MONITOR</li>
+                <li
+                  className={
+                    isSideClicked === "Request" ? "mm-active" : ""
+                  }
+                >
+                  <NavLink exact to="/ACDHAccountRequest"
+                    className="ai-icon"
+                    aria-expanded="false"
+                    onClick={
+                      () => { setSideClicked("Request") }
+                    }
+                  >
+                    <i className="flaticon-019-add-user" />
+                    <span className="nav-text">Account Request/s</span>
+                  </NavLink>
+                </li>
+                <li
+                  className={
+                    isSideClicked === "Handle" ? "mm-active" : ""
+                  }
+                >
+                  <NavLink exact to="/ACDHAllHandle"
+                    className="ai-icon"
+                    aria-expanded="false"
+                    onClick={
+                      () => { setSideClicked("Handle") }
+                    }
+                  >
+                    <i className="flaticon-381-user-9" />
+                    <span className="nav-text">Handle Faculty</span>
+                  </NavLink>
+                </li>
+                <li className="nav-label">GENERATE</li>
+                <li
+                  className={
+                    isSideClicked === "Report" ? "mm-active" : ""
+                  }
+                >
+                  <NavLink exact to="/ACDHReport"
+                    className="ai-icon"
+                    aria-expanded="false"
+                    onClick={
+                      () => { setSideClicked("Report") }
+                    }
+                  >
+                    <i className="flaticon-119-printer" />
+                    <span className="nav-text">Report</span>
+                  </NavLink>
+                </li>
+              </>}
+                
           </ul>
         </div>
       </div>

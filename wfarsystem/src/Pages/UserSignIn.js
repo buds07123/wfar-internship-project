@@ -66,11 +66,11 @@ const UserSignIn = () => {
                 <p><strong>ERROR:</strong> Invalid sign-in credentials. </p>
                 <p>Attemps remaining: <strong>3</strong></p>
               </div> */}
-              {/* <span className="span">
+              <span className="span">
                 <a href="forgotPassword" data-toggle="modal" data-target="#forgotPassword">
                   Forgot Password?
                 </a>
-              </span> */}
+              </span>
               <input
                 type="submit"
                 value="Sign In"

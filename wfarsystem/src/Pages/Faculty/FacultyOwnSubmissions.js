@@ -108,7 +108,8 @@ const FacultyOwnSubmissions = () => {
                             to="/FacultyIndividualView"
                             state={{
                               wfarId: wfar._id,
-                              wfarWeekNo: wfar.week_number
+                              wfarWeekNo: wfar.week_number,
+                              wfarStatus: wfar.status
                             }}
                             className="btn btn-rounded btn-warning"
                           >

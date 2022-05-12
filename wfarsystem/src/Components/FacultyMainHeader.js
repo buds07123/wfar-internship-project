@@ -117,7 +117,7 @@ const FacultyMainHeader = () => {
                 <img src={empData.emp_picture} width={20} alt />
                 <div className="header-info">
                   <span>{empData.fname} {empData.mname} {empData.lname}</span>
-                  <small>{empData.position}</small>
+                  <small>{empData.updatedPosition}</small>
                 </div>
               </a>
               <div className="dropdown-menu dropdown-menu-right">
