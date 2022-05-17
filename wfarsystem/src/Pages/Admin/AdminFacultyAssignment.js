@@ -62,7 +62,8 @@ const AdminFacultyAssignment = () => {
   }, [])
 
   //toAssign
-  const [hanldeID,setHandleID] = useState('')
+  const [hanldeAC_ID,setHandleID] = useState('')
+  const [hanldeDH_ID,setHandleDH_ID] = useState('')
   const [fname,setFName] = useState('')
   const [mname,setMName] = useState('')
   const [lname,setLName] = useState('')
@@ -76,26 +77,43 @@ const AdminFacultyAssignment = () => {
   const editAsignTo = async (e) => {
     e.preventDefault()
 
-    const empId = {
-      empID,
-      fname,
-      mname,
-      lname,
-      position
+
+    if (hanldeAC_ID != "" || hanldeAC_ID == null) {
+      //EDIT AC
+      const ac_data = {
+        ac_inCharge,
+        empID,
+        fname,
+        mname,
+        lname,
+        position
+      }
+
+      await axios.put(`http://localhost:4000/api/editAssignTO/${empID}/${hanldeAC_ID}`, ac_data)
+        .then(res => {
+          // setUpdateTable(updateTable + 1)
+          window.location.reload(false);
+        })
     }
+    
 
-    await axios.put(`http://localhost:4000/api/toAssign/${hanldeID}`,empId)
+    if (hanldeDH_ID != "" || hanldeDH_ID == null) {
+      // EDIT DH
+      const dh_data = {
+        dh_inCharge,
+        empID,
+        fname,
+        mname,
+        lname,
+        position
+      }
+      await axios.put(`http://localhost:4000/api/editDHAssignTO/${empID}/${hanldeDH_ID}`, dh_data)
+        .then(res => {
+          // setUpdateTable(updateTable + 1)
+          window.location.reload(false);
+        })
+    } 
 
-
-    const formData = {
-      ac_inCharge,
-      dh_inCharge
-    }
-
-    await axios.put(`http://localhost:4000/api/editAssignTO/${empID}`,formData)
-    .then(res => {
-      setUpdateTable(updateTable + 1)
-    })
   }
 
   const columns = [
@@ -113,11 +131,11 @@ const AdminFacultyAssignment = () => {
     },
     {
       name: "ac_inCharge",
-      label: "Area Chair in Charge",
+      label: "Area Chair in Charge"
     },
     {
       name: "dh_inCharge",
-      label: "Department Head In Charge",
+      label: "Department Head In Charge"
     },
     {
       name: "action",
@@ -139,6 +157,8 @@ const AdminFacultyAssignment = () => {
                   setPos(data[dataIndex].updatedPosition)
                   setAc_inCharge(data[dataIndex].ac_inCharge)
                   setDh_inCharge(data[dataIndex].dh_inCharge)
+                  setHandleID(data[dataIndex].handlerAC_ID)
+                  setHandleDH_ID(data[dataIndex].handlerDH_ID)
                 }}
               >
                 Assign
@@ -200,6 +220,7 @@ const AdminFacultyAssignment = () => {
               </h5>
               <form onSubmit={editAsignTo}>
                 <div className="row mt-4 sp4">
+
                   <select className="form-control default-select form-control-lg" 
                     onChange={(e) => {
                       setAc_inCharge(e.target.value)
@@ -207,13 +228,12 @@ const AdminFacultyAssignment = () => {
                       const el = e.target.childNodes[index]
                       const id = el.getAttribute('data-id');  
                       setHandleID(id)
-                      console.log(e.target.value)
                     }}
                     defaultValue={ac_inCharge}
                     >
-                    <option value={ac_inCharge} selected disabled hidden>
-                      Select Area Chair
-                    </option>
+
+                    <option value={ac_inCharge} disabled hidden>Select Area Chair</option>
+                    <option>None</option>
                     {AC.map((ac) => {
                       return (
                         <>
@@ -222,20 +242,19 @@ const AdminFacultyAssignment = () => {
                       )
                     })}
                   </select>
+
                   <select className="form-control default-select form-control-lg mt-4"
                     onChange={(e) => {
                       setDh_inCharge(e.target.value)
                       const index = e.target.selectedIndex;
                       const el = e.target.childNodes[index]
                       const id = el.getAttribute('data-id');  
-                      setHandleID(id)
-                      console.log(id)
+                      setHandleDH_ID(id)
                     }}
                     defaultValue={dh_inCharge}
                   >
-                    <option value={dh_inCharge} selected disabled hidden>
-                      Select Department Head
-                    </option>
+                    <option value={dh_inCharge} disabled hidden>Select Department Head</option>
+                    <option>None</option>
                     {DH.map((dh) => {
                       return (
                         <>

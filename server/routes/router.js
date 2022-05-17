@@ -39,13 +39,15 @@ router.post('/postWfar', upload.fields([{name: "meet_screenshots"}, {name: "act_
 router.get('/findWeekNo/:weekNo', controller.findWeekNo)
 router.get('/getWfarInfo/:schoolyear/:sem', verifyToken, controller.getWfarInfo)
 router.get('/getFullWfarInfo/:id', controller.getFullWfarInfo)
-router.put('/updateOneWfarInfo/:id', controller.updateOneWfarInfo)
+router.put('/updateOneWfarInfo/:id', upload.fields([{name: "meet_screenshots"}]), controller.updateOneWfarInfo)
 router.put('/deleteOneWfar/:id/:rowID', controller.deleteOneWfar)
 router.put('/wfarArchive/:id', controller.wfarArchive)
 router.get('/getAllArchiveData', verifyToken, controller.getAllArchiveData)
 router.put('/toRestore/:id', controller.toRestore)
 router.get('/allReqAcc', verifyToken, controller.allReqAcc)
 router.get('/handleFaculty', verifyToken, controller.handleFaculty)
+router.put('/setStatusOk/:id', controller.setStatusOk)
+router.put('/setStatusRevise/:id', controller.setStatusRevise)
 router.post('/logout',controller.logout)      
 
 
@@ -69,8 +71,12 @@ router.put('/toDemote/:id', adminController.toDemote)
 router.get('/getAllFaculty', adminController.getAllFaculty)
 router.get('/getAllAC', adminController.getAllAC)
 router.get('/getAllDH', adminController.getAllDH)
-router.put('/editAssignTO/:id', adminController.editAssignTO)
-router.put('/toAssign/:id' , adminController.toAssign)
+
+router.put('/editAssignTO/:id/:handlerAC_ID', adminController.editAssignTO)
+// router.put('/toAssign/:id' , adminController.toAssign)
+
+router.put('/editDHAssignTO/:id/:handlerDH_ID', adminController.editDHAssignTO)
+// router.put('/toDHAssign/:id' , adminController.toDHAssign)
 
 router.get('/getAllWfar/:id', adminController.getAllWfar)
 router.get('/getWfarsPerWeek/:id', adminController.getWfarsPerWeek)

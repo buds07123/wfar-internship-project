@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import AttachmentUpload from "../../Components/AttachmentUpload"
+import Act_AttachmentUpload from "../../Components/Act_AttachmentUpload";
 
 //Bootstrap and jQuery libraries
 import "jquery/dist/jquery.min.js";
@@ -15,114 +16,6 @@ import axios from "axios";
 axios.defaults.withCredentials = true
 
 const FacultyIndividualView = () => {
-  // componentDidMount() {
-  //   //initialize datatable
-  //   $("document").ready(function () {
-  //     $("#filterTable").dataTable({
-  //       retrieve: true,
-  //       paging: true,
-  //       searching: true,
-  //       orderCellsTop: true,
-  //       language: {
-  //         paginate: {
-  //           next: '<i class="fa fa-angle-double-right" aria-hidden="true"></i>',
-  //           previous: '<i class="fa fa-angle-double-left" aria-hidden="true"></i>',
-  //         },
-  //       },
-  //     });
-
-  //     //Get a reference to the new datatable
-  //     var table = $("#filterTable").DataTable();
-
-  //     //Take the category filter drop down and append it to the datatables_filter div.
-  //     //You can use this same idea to move the filter anywhere withing the datatable that you want.
-  //     $("#filterTable_filter.dataTables_filter").append($("#categoryFilter"));
-
-  //     //Get the column index for the Category column to be used in the method below ($.fn.dataTable.ext.search.push)
-  //     //This tells datatables what column to filter on when a user selects a value from the dropdown.
-  //     //It's important that the text used here (Category) is the same for used in the header of the column to filter
-  //     var categoryIndex = 4;
-  //     $("#filterTable th").each(function (i) {
-  //       if ($($(this)).html() == "Category") {
-  //         categoryIndex = i;
-  //         return false;
-  //       }
-  //     });
-
-  //     //Use the built in datatables API to filter the existing rows by the Category column
-  //     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-  //       var selectedItem = $("#categoryFilter").val();
-  //       var category = data[categoryIndex];
-  //       if (selectedItem === "" || category.includes(selectedItem)) {
-  //         return true;
-  //       }
-  //       return false;
-  //     });
-
-  //     //Set the change event for the Category Filter dropdown to redraw the datatable each time
-  //     //a user selects a new filter.
-  //     $("#categoryFilter").change(function (e) {
-  //       table.draw();
-  //     });
-
-  //     table.draw();
-  //   });
-  // }
-
-  // useEffect(() => {
-  //    //initialize datatable
-  //    $("document").ready(function () {
-  //     $("#filterTable").dataTable({
-  //       retrieve: true,
-  //       paging: true,
-  //       searching: true,
-  //       orderCellsTop: true,
-  //       language: {
-  //         paginate: {
-  //           next: '<i class="fa fa-angle-double-right" aria-hidden="true"></i>',
-  //           previous: '<i class="fa fa-angle-double-left" aria-hidden="true"></i>',
-  //         },
-  //       },
-  //     });
-
-  //     //Get a reference to the new datatable
-  //     var table = $("#filterTable").DataTable();
-
-  //     //Take the category filter drop down and append it to the datatables_filter div.
-  //     //You can use this same idea to move the filter anywhere withing the datatable that you want.
-  //     $("#filterTable_filter.dataTables_filter").append($("#categoryFilter"));
-
-  //     //Get the column index for the Category column to be used in the method below ($.fn.dataTable.ext.search.push)
-  //     //This tells datatables what column to filter on when a user selects a value from the dropdown.
-  //     //It's important that the text used here (Category) is the same for used in the header of the column to filter
-  //     var categoryIndex = 4;
-  //     $("#filterTable th").each(function (i) {
-  //       if ($($(this)).html() == "Category") {
-  //         categoryIndex = i;
-  //         return false;
-  //       }
-  //     });
-
-  //     //Use the built in datatables API to filter the existing rows by the Category column
-  //     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-  //       var selectedItem = $("#categoryFilter").val();
-  //       var category = data[categoryIndex];
-  //       if (selectedItem === "" || category.includes(selectedItem)) {
-  //         return true;
-  //       }
-  //       return false;
-  //     });
-
-  //     //Set the change event for the Category Filter dropdown to redraw the datatable each time
-  //     //a user selects a new filter.
-  //     $("#categoryFilter").change(function (e) {
-  //       table.draw();
-  //     });
-
-  //     table.draw();
-  //   });
-  // },[])
-
   const navigate = useNavigate()
 
   //wfar_id from page (/FacultyOwnSubmission)
@@ -149,6 +42,10 @@ const FacultyIndividualView = () => {
     })
   }, [updateTable])
 
+  //Display Pictures
+  const [meet_Displayscreenshots, setMeet_screenshots] = useState([])
+  const [act_Displayscreenshots, setAct_screenshots] = useState([])
+
   //Edit Wfar
   const [_id, setID] = useState('')
   const [week_number, setWeek_number] = useState('')
@@ -160,8 +57,9 @@ const FacultyIndividualView = () => {
   const [attendee, setAttendee] = useState('')
   const [recording_link, setRecording_link] = useState('')
   const [activity, setActivity] = useState('')
-  const [meet_screenshots, setMeet_screenshots] = useState([])
-  const [act_screenshots, setAct_screenshots] = useState([])
+  // const [meet_screenshots, setEditMeet_screenshots] = useState([])
+  // const [act_screenshots, setEditAct_screenshots] = useState([])
+  
 
   const updateData = async (e) => {
     e.preventDefault()
@@ -177,6 +75,24 @@ const FacultyIndividualView = () => {
       recording_link,
       activity
     }
+
+    // const formData = new FormData()
+
+    // formData.append('week_number', week_number)
+    // formData.append('date', date)
+    // formData.append('subject', subject)
+    // formData.append('course', course)
+    // formData.append('year', year)
+    // formData.append('section', section)
+    // formData.append('attendee', attendee)
+    // formData.append('recording_link', recording_link)
+    // formData.append('activity', activity)
+    // for (const key of Object.keys(meet_screenshots)) {
+    //   formData.append('meet_screenshots', meet_screenshots[key])
+    // }
+    // for (const key of Object.keys(act_screenshots)) {
+    //   formData.append('act_screenshots', act_screenshots[key])
+    // }
 
     await axios.put(`http://localhost:4000/api/updateOneWfarInfo/${_id}`, formData)
       .then(res => {
@@ -432,9 +348,9 @@ const FacultyIndividualView = () => {
                 </div>
                 <div className="card-body">
                   <div className="bootstrap-badge mb-5 text-left">
-                    <span className="badge badge-xl light badge-success">
-                      Status: {wfar_status}
-                    </span>
+                  {wfar_status === "OK" ? <span class="badge badge-xl light badge-success">Status: {wfar_status}</span> :
+                      wfar_status === "For Checking" ? <span class="badge badge-xl light badge-info">Status: {wfar_status}</span> :
+                        <span class="badge badge-xl light badge-danger">Status: {wfar_status}</span>}
                   </div>
                   <div className="table-responsive">
                     {/* <!-- Create the drop down filter --> */}
@@ -487,7 +403,7 @@ const FacultyIndividualView = () => {
                 <h5 className="h5 text-primary d-inline">Uploaded Screenshot/s</h5>
                 <div className="row mt-4 sp4" id="lightgallery">
 
-                  {meet_screenshots.map((meet_screenshots) => {
+                  {meet_Displayscreenshots.map((meet_screenshots) => {
                     return (
                       <a
                         href={meet_screenshots}
@@ -536,7 +452,7 @@ const FacultyIndividualView = () => {
                 <h5 className="h5 text-primary d-inline">Uploaded Screenshot/s</h5>
                 <div className="row mt-4 sp4" id="lightgallery">
 
-                  {act_screenshots.map((act_screenshots) => {
+                  {act_Displayscreenshots.map((act_screenshots) => {
                     return (
                       <a
                         href={act_screenshots}
@@ -552,9 +468,7 @@ const FacultyIndividualView = () => {
                       </a>
                     )
                   })}
-                  
-                  
-                  
+                
                 </div>
               </div>
             </div>
@@ -599,7 +513,7 @@ const FacultyIndividualView = () => {
                           <div className="form-group row">
                             <label className="col-sm-3 col-form-label">Week No.</label>
                             <div className="col-sm-9">
-                              <select className="form-control default-select form-control-lg" onChange={(e) => setWeek_number(e.target.value)} value={week_number} required>
+                              <select className="form-control default-select form-control-lg" onChange={(e) => setWeek_number(e.target.value)} value={week_number}>
                                 <option selected disabled>
                                   Select a week
                                 </option>
@@ -630,7 +544,7 @@ const FacultyIndividualView = () => {
                                 Date of Class/ Accomplishment
                               </label>
                               <div className="col-sm-9">
-                                <input type="date" className="form-control" onChange={(e) => setDate(e.target.value)} value={date} required />
+                                <input type="date" className="form-control" onChange={(e) => setDate(e.target.value)} value={date} />
                               </div>
                             </div>
                             <div className="form-group row">
@@ -643,7 +557,6 @@ const FacultyIndividualView = () => {
                                   className="form-control input-default "
                                   placeholder="Subject"
                                   onChange={(e) => setSubject(e.target.value)} value={subject}
-                                  required
                                 />
                               </div>
                             </div>
@@ -657,7 +570,6 @@ const FacultyIndividualView = () => {
                                   className="form-control"
                                   placeholder="Course"
                                   onChange={(e) => setCourse(e.target.value)} value={course}
-                                  required
                                 />
                               </div>
                               <div className="col mt-2 mt-sm-0">
@@ -669,7 +581,6 @@ const FacultyIndividualView = () => {
                                   placeholder="Year"
                                   onChange={(e) => setYear(e.target.value)}
                                   value={year}
-                                  required
                                 />
                               </div>
                               <div className="col mt-2 mt-sm-0">
@@ -679,7 +590,6 @@ const FacultyIndividualView = () => {
                                   placeholder="Section"
                                   onChange={(e) => setSection(e.target.value)}
                                   value={section}
-                                  required
                                 />
                               </div>
                             </div>
@@ -694,7 +604,6 @@ const FacultyIndividualView = () => {
                                   placeholder="No. of Attendees"
                                   onChange={(e) => setAttendee(e.target.value)}
                                   value={attendee}
-                                  required
                                 />
                               </div>
                             </div>
@@ -709,7 +618,6 @@ const FacultyIndividualView = () => {
                                   placeholder="Link of MS Teams Recordings"
                                   onChange={(e) => setRecording_link(e.target.value)}
                                   value={recording_link}
-                                  required
                                 />
                               </div>
                             </div>
@@ -718,7 +626,7 @@ const FacultyIndividualView = () => {
                                 Learning Activities
                               </label>
                               <div className="col-sm-9">
-                                <textarea className="form-control" rows={4} defaultValue={""} onChange={(e) => setActivity(e.target.value)} value={activity} required />
+                                <textarea className="form-control" rows={4} defaultValue={""} onChange={(e) => setActivity(e.target.value)} value={activity} />
                               </div>
                             </div>
                             <div className="form-group row">
@@ -732,7 +640,7 @@ const FacultyIndividualView = () => {
                                     className="card-body d-flex flex-wrap align-items-center"
                                     id="container"
                                   >
-                                    {/* <AttachmentUpload /> */}
+                                    {/* <AttachmentUpload setEditMeet_screenshots={setEditMeet_screenshots} /> */}
                                   </div>
                                 </div>
                               </div>
@@ -747,7 +655,7 @@ const FacultyIndividualView = () => {
                                   </div>
                                   <div className="card-body d-flex flex-wrap justify-content-start"
                                     id="act-container">
-                                    {/* <AttachmentUpload /> */}
+                                    {/* <Act_AttachmentUpload setEditAct_screenshots={setEditAct_screenshots} /> */}
                                   </div>
                                 </div>
                               </div>

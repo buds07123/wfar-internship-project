@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodeMailer = require('nodemailer')
@@ -288,9 +289,15 @@ exports.toDemote = async (req,res) => {
     try {
         const id = req.params.id
 
-        await employeeModel.findByIdAndUpdate(id,{
+        const updatePosition = await employeeModel.findByIdAndUpdate(id,{
             updatedPosition: "Faculty"
         })
+
+        if (updatePosition) {
+            await employeeModel.findOneAndUpdate(
+                { _id: id },
+                { $unset: { assignTo: "" } })
+        }
 
         return res.status(200).json({ msg: "Successfully updated" })
     } catch (error) {
@@ -333,13 +340,111 @@ exports.getAllDH = async (req,res) => {
 exports.editAssignTO = async (req,res) => {
     try {
         const id = req.params.id
-        const {ac_inCharge,dh_inCharge} = req.body
+        const handlerAC_ID = req.params.handlerAC_ID || ""
+        const {ac_inCharge,empID,fname,mname,lname,position} = req.body
 
-        const updateIncharge = await employeeModel.findByIdAndUpdate(id, {
-            ac_inCharge,
-            dh_inCharge
-        })
+        const handlerID = await employeeModel.findOne({_id: id})
 
+        if (ac_inCharge == "None"){
+            
+            if(handlerID.ac_inCharge != "None"){
+                await employeeModel.findOneAndUpdate(
+                    { _id: handlerID.handlerAC_ID },
+                    { $pull: { assignTo: { empID: id } } }
+                );
+            }
+
+            await employeeModel.findByIdAndUpdate(id, {
+                handlerAC_ID: "",
+                ac_inCharge,
+            })
+        }else{
+            const updateHandler = await employeeModel.findByIdAndUpdate(id, {
+                handlerAC_ID: handlerAC_ID,
+                ac_inCharge,
+            })
+
+            if (updateHandler) {
+
+                if (handlerID.handlerAC_ID === "") {
+                    //AC HANDLER
+                    const checkID = await employeeModel.findOne({ _id: handlerAC_ID, "assignTo.empID": empID })
+
+                    if (checkID) {
+                        await wfarModel.findOneAndUpdate({ "assignTo.empID": empID },
+                            {
+                                $set: {
+                                    'assignTo.$.assignToID': handlerAC_ID,
+                                    'assignTo.$.fname': fname,
+                                    'assignTo.$.mname': mname,
+                                    'assignTo.$.lname': lname,
+                                    'assignTo.$.position': position,
+                                }
+                            }
+                        )
+                    } else {
+                        await employeeModel.updateOne({ _id: handlerAC_ID },
+                            {
+                                $push: {
+                                    "assignTo": {
+                                        assignToID: handlerAC_ID,
+                                        empID,
+                                        fname,
+                                        mname,
+                                        lname,
+                                        position
+                                    }
+                                }
+                            }
+                        )
+                    }
+                } else if (handlerID.handlerAC_ID !== handlerAC_ID) {
+                    await employeeModel.findOneAndUpdate({ _id: handlerID.handlerAC_ID },
+                        {
+                            $pull: {
+                                assignTo: {
+                                    empID: id
+                                }
+                            }
+                        }
+                    )
+                }
+
+                //AC HANDLER
+                const checkID = await employeeModel.findOne({ _id: handlerAC_ID, "assignTo.empID": empID })
+
+                if (checkID) {
+                    await wfarModel.findOneAndUpdate({ "assignTo.empID": empID },
+                        {
+                            $set: {
+                                'assignTo.$.assignToID': handlerAC_ID,
+                                'assignTo.$.fname': fname,
+                                'assignTo.$.mname': mname,
+                                'assignTo.$.lname': lname,
+                                'assignTo.$.position': position,
+                            }
+                        }
+                    )
+                } else {
+                    await employeeModel.updateOne({ _id: handlerAC_ID },
+                        {
+                            $push: {
+                                "assignTo": {
+                                    assignToID: handlerAC_ID,
+                                    empID,
+                                    fname,
+                                    mname,
+                                    lname,
+                                    position
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+
+        }
+        
 
         return res.status(200).json({ msg: "Successfully updated" })
     } catch (error) {
@@ -347,45 +452,117 @@ exports.editAssignTO = async (req,res) => {
     }
 }
 
-exports.toAssign = async (req,res) => {
+exports.editDHAssignTO = async (req,res) => {
     try {
         const id = req.params.id
-        const {empID,fname,mname,lname,position} = req.body
+        const handlerDH_ID = req.params.handlerDH_ID || ""
+        const {dh_inCharge,empID,fname,mname,lname,position} = req.body
+        const handlerID = await employeeModel.findOne({_id: id})
 
+        if(dh_inCharge == "None"){
+            
+            if(handlerID.dh_inCharge != "None"){
+                await employeeModel.findOneAndUpdate(
+                    { _id: handlerID.handlerDH_ID },
+                    { $pull: { assignTo: { empID: id } } }
+                );
+            }
+    
+            await employeeModel.findByIdAndUpdate(id, {
+                handlerDH_ID: "",
+                dh_inCharge
+            })
+        }else if(dh_inCharge != "None"){
+            const updateHandler = await employeeModel.findByIdAndUpdate(id, {
+                handlerDH_ID: handlerDH_ID,
+                dh_inCharge
+            })
 
-        const checkID = await employeeModel.findOne({_id: id, "assignTo.empID": empID})
+            if(updateHandler){
 
-        if (checkID) {
-            await wfarModel.findOneAndUpdate({ "assignTo.empID": empID },
-                {
-                    $set: {
-                        'assignTo.$.fname': fname,
-                        'assignTo.$.mname': mname,
-                        'assignTo.$.lname': lname,
-                        'assignTo.$.position': position,
+                if(handlerID.handlerDH_ID === ""){
+                    //DH HANDLER
+                    const checkDH_ID = await employeeModel.findOne({ _id: handlerDH_ID, "assignTo.empID": empID })
+                    if (checkDH_ID) {
+                        await wfarModel.findOneAndUpdate({ "assignTo.empID": empID },
+                            {
+                                $set: {
+                                    'assignTo.$.assignToID': handlerDH_ID,
+                                    'assignTo.$.fname': fname,
+                                    'assignTo.$.mname': mname,
+                                    'assignTo.$.lname': lname,
+                                    'assignTo.$.position': position,
+                                }
+                            }
+                        )
+                    } else {
+                        await employeeModel.updateOne({ _id: handlerDH_ID },
+                            {
+                                $push: {
+                                    "assignTo": {
+                                        assignToID: handlerDH_ID,
+                                        empID,
+                                        fname,
+                                        mname,
+                                        lname,
+                                        position
+                                    }
+                                }
+                            }
+                        )
                     }
-                }
-            )
-        }else{
-            await employeeModel.updateOne({ _id: id },
-                {
-                    $push: {
-                        "assignTo": {
-                            empID,
-                            fname,
-                            mname,
-                            lname,
-                            position
+                }else if (handlerID.handlerDH_ID !== handlerDH_ID) {
+                    console.log(handlerID.handlerDH_ID)
+                    // console.log(handlerDH_ID)
+                    await employeeModel.findOneAndUpdate({ _id: handlerID.handlerDH_ID },
+                        {
+                            $pull: {
+                                assignTo: {
+                                    empID: id
+                                }
+                            }
                         }
-                    }
-                }
-            )
-        }
+                    )
 
+                    //DH HANDLER
+                    const checkDH_ID = await employeeModel.findOne({ _id: handlerDH_ID, "assignTo.empID": empID })
+                    if (checkDH_ID) {
+                        await wfarModel.findOneAndUpdate({ "assignTo.empID": empID },
+                            {
+                                $set: {
+                                    'assignTo.$.assignToID': handlerDH_ID,
+                                    'assignTo.$.fname': fname,
+                                    'assignTo.$.mname': mname,
+                                    'assignTo.$.lname': lname,
+                                    'assignTo.$.position': position,
+                                }
+                            }
+                        )
+                    } else {
+                        await employeeModel.updateOne({ _id: handlerDH_ID },
+                            {
+                                $push: {
+                                    "assignTo": {
+                                        assignToID: handlerDH_ID,
+                                        empID,
+                                        fname,
+                                        mname,
+                                        lname,
+                                        position
+                                    }
+                                }
+                            }
+                        )
+                    }
+
+                }
+
+            }
+        }
 
         return res.status(200).json({ msg: "Successfully updated" })
     } catch (error) {
-        console.log(error)
+        // console.log(error)
     }
 }
 

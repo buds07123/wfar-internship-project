@@ -108,6 +108,8 @@ function App() {
           <Route path="/ACDHAccountRequest" element={<ACDHAccountRequest />} />
           <Route path="/ACDHAllHandle" element={<ACDHAllHandle />} />
           <Route path="/ACDHReport" element={<ACDHReport />} />
+          <Route path="/ACDHIndividualHandle" element={<ACDHIndividualHandle />} />
+          <Route path="/ACDHHandleWfarView" element={<ACDHHandleWfarView />} />
         </Route>
 
         <Route path="/" element={<ACDH />} >

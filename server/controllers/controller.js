@@ -410,7 +410,26 @@ exports.getWfarInfo = async (req, res) => {
 exports.updateOneWfarInfo = async (req, res) => {
     try {
         const id = req.params.id
-        const { week_number, date, subject, course, year, section, attendee, recording_link, activity, meet_screenshots, act_screenshots } = req.body
+        const { week_number, date, subject, course, year, section, attendee, recording_link, activity } = req.body
+
+        //uploadmultiple images
+        //meet_screenshots
+        // const urls = [];
+        // const files = req.files["meet_screenshots"];
+        // for (const file of files) {
+        //   const { path } = file;
+        //   const newPath = await cloudinaryImageUploadMethodMeet(path);
+        //   urls.push(newPath);
+        // }
+
+        // act_screenshots
+        // const actScreenshot_urls = [];
+        // const actScreenshot_urls_files = req.files["act_screenshots"];
+        // for (const file of actScreenshot_urls_files) {
+        //   const { path } = file;
+        //   const newPath = await cloudinaryImageUploadMethodAct(path);
+        //   actScreenshot_urls.push(newPath);
+        // }
 
         const wfar = await wfarModel.findOneAndUpdate({ "info._id": id },
             {
@@ -423,9 +442,7 @@ exports.updateOneWfarInfo = async (req, res) => {
                     'info.$.section': section,
                     'info.$.attendee': attendee,
                     'info.$.recording_link': recording_link,
-                    'info.$.activity': activity,
-                    'info.$.meet_screenshots': meet_screenshots,
-                    'info.$.act_screenshots': act_screenshots
+                    'info.$.activity': activity
                 }
             }
         )
@@ -601,6 +618,36 @@ exports.handleFaculty = async (req,res) => {
         const empData = await employeeModel.find({_id: id});
 
         return res.status(200).json({empData})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+//Set Status Wfar 
+exports.setStatusOk = async (req,res) => {
+    try {
+        const id = req.params.id
+
+        await wfarModel.findByIdAndUpdate(id, {
+            status: "OK"
+        })
+
+        return res.status(200).json({ msg: "Successfully updated" })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.setStatusRevise = async (req,res) => {
+    try {
+        const id = req.params.id
+
+        await wfarModel.findByIdAndUpdate(id,{
+            status: "With Revisions",
+            withRevisionComment: req.body.withRevisionComment
+        })
+
+        return res.status(200).json({ msg: "Successfully updated" })
     } catch (error) {
         console.log(error)
     }

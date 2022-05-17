@@ -28,7 +28,6 @@ const AttachmentUpload = ({setMeet_screenshots}) => {
               name="meet_screenshots"
               onChange={onSelectFile}
               multiple
-              required
             />
             <span className="btn-icon-left text-secondary">
               <i className="fa fa-plus" />

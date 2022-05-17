@@ -2,11 +2,14 @@ import React,{useState,useEffect} from "react";
 import { Link } from "react-router-dom";
 
 import Wfarbanner from "../../Components/WfarBanner";
-import YearSemSelection from "../../Components/YearSemSelection";
+import ACDHYearSemSelection from "../../Components/ACDHYearSemSelection";
 import axios from "axios";
 axios.defaults.withCredentials = true
 
 const AcdhAllHandle = () => {
+
+  const [year,setYear] = useState('')
+  const [sem,setSem] = useState('')
   
   const [handleFaculty, setHandleFaculty] = useState([])
 
@@ -49,7 +52,7 @@ const AcdhAllHandle = () => {
             </div>
           </div>
           {/* School year, Sem Selection */}
-          <YearSemSelection />
+          <ACDHYearSemSelection setYear={setYear} setSem={setSem} />
           <div className="row">
 
             {handleFaculty.map((data) => {
@@ -71,6 +74,10 @@ const AcdhAllHandle = () => {
                           <Link
                             to="/AcdhIndividualHandle"
                             className="btn btn-rounded btn-warning"
+                            state={{
+                              wfarId: data.empID,
+                              wfarName: data.fname + " " + data.mname + " " + data.lname
+                            }}
                           >
                             <span className="btn-icon-left text-warning">
                               <i className="fa fa-eye color-warning" />

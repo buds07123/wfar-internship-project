@@ -149,7 +149,9 @@ const FacultyArchives = () => {
   ]
 
   const options={
-    selectableRows: false
+    selectableRows: false,
+    sort: true,
+    sortOrder: { name: 'school_year', direction: 'asc' }
   }
 
 

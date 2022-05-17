@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const facultyAssign = new mongoose.Schema({
+    assignToID:{
+        type: String,
+        required: false
+    },
     empID:{
         type: String,
         required: false
@@ -24,9 +28,17 @@ const facultyAssign = new mongoose.Schema({
 })
 
 const employeeSchema = new mongoose.Schema({
+    handlerAC_ID: {
+        type: String,
+        required: false
+    },
     ac_inCharge: {
         type: String,
         default: "None"
+    }, 
+    handlerDH_ID: {
+        type: String,
+        required: false
     },
     dh_inCharge: {
         type: String,

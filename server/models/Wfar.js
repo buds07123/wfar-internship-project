@@ -82,6 +82,10 @@ const fullwfarSchema = new mongoose.Schema({
         required: false
     },
     info: [wfarSchema],
+    withRevisionComment: {
+        type: String,
+        required: false
+    },
     isActive: {
         type: Boolean,
         default: true
