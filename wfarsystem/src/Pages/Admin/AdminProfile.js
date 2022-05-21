@@ -94,12 +94,12 @@ const AdminProfile = () => {
                         <h4 className="h4 text-primary mb-0">{admin.first_name} {admin.middle_name} {admin.last_name}</h4>
                         <p>Admin</p>
                       </div>
-                      <div className="ml-auto">
+                      {/* <div className="ml-auto">
                         <button className="btn btn-danger">
                           <i className="flaticon-381-trash-1" />
                           &nbsp;Delete Account
                         </button>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>

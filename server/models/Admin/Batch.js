@@ -6,10 +6,6 @@ const batchSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    // semester: {
-    //     type: String,
-    //     required: true
-    // },
     week_number: {
         type: String,
         required: true

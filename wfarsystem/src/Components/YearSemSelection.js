@@ -60,7 +60,7 @@ const YearSemSelection = ({setYear,setSem}) => {
                   <div className="input-group-prepend">
                     <label className="input-group-text">Semester</label>
                   </div>
-                  <select className="form-control default-select form-control-lg" onChange={e => setSem(e.target.value)}>
+                  <select className="form-control default-select" onChange={e => setSem(e.target.value)}>
                     <option selected disabled hidden>
                       Select sem
                     </option>

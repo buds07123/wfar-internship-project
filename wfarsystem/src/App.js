@@ -17,6 +17,7 @@ import FacultyArchives from "./Pages/Faculty/FacultyArchives";
 import FacultyUpload from "./Pages/Faculty/FacultyUpload";
 import FacultyOwnSubmissions from "./Pages/Faculty/FacultyOwnSubmissions";
 import FacultyIndividualView from "./Pages/Faculty/FacultyIndividualView";
+import FacultyWfarPrint from "./Pages/Faculty/FacultyWfarPrint";
 
 import AdminLogin from "./Pages/Admin/AdminLogin";
 import AdminRegister from "./Pages/Admin/AdminRegister";
@@ -44,6 +45,7 @@ import ACDHOwnWfarView from "./Pages/ACDH/ACDHOwnWfarView";
 import ACDHProfile from "./Pages/ACDH/ACDHProfile";
 import ACDHReport from "./Pages/ACDH/ACDHReport";
 import ACDHUpload from "./Pages/ACDH/ACDHUpload";
+import ACDHWfarPrint from "./Pages/ACDH/ACDHWfarPrint";
 
 import PageLoader from "./Components/PageLoader";
 import TopHeader from './Components/TopHeader';
@@ -105,11 +107,13 @@ function App() {
           <Route path="/FacultyOwnSubmissions" element={<FacultyOwnSubmissions />} />
           <Route path="/FacultyUpload" element={<FacultyUpload />} />
           <Route path="/FacultyIndividualView" element={<FacultyIndividualView />} />
+          <Route path="/FacultyWfarPrint" element={<FacultyWfarPrint />} />
           <Route path="/ACDHAccountRequest" element={<ACDHAccountRequest />} />
           <Route path="/ACDHAllHandle" element={<ACDHAllHandle />} />
           <Route path="/ACDHReport" element={<ACDHReport />} />
           <Route path="/ACDHIndividualHandle" element={<ACDHIndividualHandle />} />
           <Route path="/ACDHHandleWfarView" element={<ACDHHandleWfarView />} />
+          <Route path="/ACDHWfarPrint" element={<ACDHWfarPrint />} />
         </Route>
 
         <Route path="/" element={<ACDH />} >

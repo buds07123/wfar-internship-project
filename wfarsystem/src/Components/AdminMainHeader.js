@@ -18,8 +18,13 @@ const AdminMainHeader = () => {
   }, [])
 
   const logoutButton = async () => {
-    await axios.post('http://localhost:4000/api/adminLogout')
-    window.location.href = '/AdminLogin'
+    let text = "Are you sure you want to logout?";
+    if (window.confirm(text) == true) {
+      await axios.post('http://localhost:4000/api/adminLogout')
+      .then(res => {
+        window.location.href = '/AdminLogin'
+      })
+    }
   }
 
   return (
@@ -41,7 +46,7 @@ const AdminMainHeader = () => {
           </div>
           <ul className="navbar-nav header-right main-notification">
             <li className="nav-item dropdown notification_dropdown">
-              <a
+              {/* <a
                 className="nav-link  ai-icon"
                 href="javascript:void(0)"
                 role="button"
@@ -61,7 +66,7 @@ const AdminMainHeader = () => {
                   />
                 </svg>
                 <div className="pulse-css" />
-              </a>
+              </a> */}
               <div className="dropdown-menu dropdown-menu-right">
                 <div
                   id="dlab_W_Notification1"

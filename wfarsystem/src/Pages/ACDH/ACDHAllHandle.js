@@ -23,7 +23,6 @@ const AcdhAllHandle = () => {
   useEffect(() => {
     getFullWfarInfo().then((data) => {
       setHandleFaculty(data.empData[0].assignTo)
-      console.log(data.empData[0].assignTo)
     })
   }, [])
 
@@ -52,7 +51,7 @@ const AcdhAllHandle = () => {
             </div>
           </div>
           {/* School year, Sem Selection */}
-          <ACDHYearSemSelection setYear={setYear} setSem={setSem} />
+          {/* <ACDHYearSemSelection setYear={setYear} setSem={setSem} /> */}
           <div className="row">
 
             {handleFaculty.map((data) => {

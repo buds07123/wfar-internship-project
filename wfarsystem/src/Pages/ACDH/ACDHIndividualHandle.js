@@ -133,6 +133,7 @@ const AcdhIndividualHandle = () => {
             <div className="d-flex">
               <Link to="/AcdhHandleWfarView" state={{
                 wfarId: data[dataIndex]._id,
+                empID: data[dataIndex].empId,
                 weekNo: data[dataIndex].week_number,
                 status: data[dataIndex].status
               }}>

@@ -53,6 +53,10 @@ const fullwfarSchema = new mongoose.Schema({
         ref: "employee",
         required: true,
     },
+    fname: {
+        type: String,
+        required: false
+    },
     school_year: { 
         type: String,
         required: true

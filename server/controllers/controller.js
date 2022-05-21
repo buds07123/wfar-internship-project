@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const nodeMailer = require('nodemailer')
+const crypto = require('crypto')
 
 //models
 const employeeModel = require('../models/Employee')
@@ -7,10 +9,12 @@ const emailTokenModel = require('../models/EmailToken')
 const wfarModel = require('../models/Wfar')
 const fullwfarModel = require('../models/FullWfar')
 const batchModel = require('../models/Admin/Batch')
+const notifSchema = require('../models/Admin/Notification')
+const reportSchema = require('../models/Report')
+const adminModel = require('../models/Admin/Admin')
 
 //upload picture
 const cloudinary = require('../cloudinary/cloudinary')
-const { array } = require('../cloudinary/multer')
 
 //reqistration
 exports.register = async (req, res) => {
@@ -129,6 +133,116 @@ exports.login = async (req, res, next) => {
     }
 }
 
+//forgotpass
+exports.forgotPass = async (req,res) => {
+    try {
+        const { email_address } = req.body
+
+        const employee = await employeeModel.findOne({ email: email_address })
+
+        if (!employee) {
+            return res.status(406).json({
+                err: "The email or username is not existing"
+            })
+        } else if (employee.isPass == false) {
+
+            const newToken = await new emailTokenModel({
+                userId: employee._id,
+                token: crypto.randomBytes(32).toString("hex")
+            }).save()
+
+            // mail sender details
+            const transporter = nodeMailer.createTransport({
+                service: 'gmail',
+                secure: true,
+                auth: {
+                    user: process.env.EMAIL,
+                    pass: process.env.PASS
+                },
+                tls: {
+                    rejectUnauthorized: false
+                }
+            })
+
+            //mail receiver
+            const mailOption = {
+                from: ' "Verify your email" <nmaningo14@gmail.com>',
+                to: employee.email,
+                subject: 'Please verify your email',
+                html: `<h2> Hello ${employee.fname}!</h2>
+                        <h4> Please verify your email to reset your password.</h4?>
+                        <a href="http://${req.headers.host}/api/verifyEmail/${employee.id}/${newToken.token}">Verify your email</a>`
+            }
+
+            transporter.sendMail(mailOption, (error) => {
+                if (error) {
+                    console.log(error)
+                } else {
+                    console.log('Verification email is sent to your email account')
+                }
+            })   
+
+            return res.status(406).json({
+                err: "Verify your account first in your email account"
+            })
+        }
+
+        return res.status(200).json({ employee })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.verifyEmail = async (req,res) => {
+    try {
+        const emp_id = await employeeModel.findOne({ _id: req.params.id });
+        if (!emp_id) return res.status(400).send("Invalid link");
+
+        const token = await emailTokenModel.findOne({
+            userId: emp_id._id,
+            token: req.params.token,
+        });
+        if (!token) return res.status(400).send("Invalid link");
+
+        await employeeModel.findByIdAndUpdate(emp_id._id, { isPass: true });
+        await emailTokenModel.findByIdAndRemove(token._id);
+
+        res.send("Email verified sucessfully. You can now reset your password!");
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+//toChangeForgotPass
+exports.toChangeForgotPass = async (req,res) => {
+    try {
+        const id = req.params.id
+        const {newPassword,passwordCheck} = req.body
+
+        const emp = await employeeModel.findOne({_id: id})
+        
+        if (emp) {
+            // hashing password 
+            const hash = bcrypt.hashSync(passwordCheck, 10)
+
+            if (newPassword != passwordCheck) {
+                return res.status(406).json({
+                    err: "Password must be same for verification"
+                })
+            } else {
+                await employeeModel.findByIdAndUpdate(id, {
+                    password: hash,
+                    isPass: false
+                })
+            }
+        }
+
+        return res.status(200).json({msg: "Password Successfully Updated"})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 //getEmpInfoById
 exports.getEmpInfo = async (req, res) => {
     const emp_id = req.id
@@ -211,6 +325,27 @@ exports.changePassword = async (req, res) => {
         }
 
         return res.status(200).json({ msg: "Password Successfully Updated" })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.adminData = async (req,res) => {
+    try {
+        const admin = await adminModel.findById("627d9018d89c3b4896b09c84")
+
+        return res.status(200).json({admin})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.getAllNotif = async (req,res) => {
+    try {
+        const id = req.params.id
+        const notifs = await notifSchema.find({empId: id}).sort({time: -1})
+
+        return res.status(200).json({ notifs })
     } catch (error) {
         console.log(error)
     }
@@ -324,6 +459,7 @@ exports.postWfar = async (req, res) => {
             //save new wfar
             const newWfar = await new wfarModel({
                 empId: id,
+                fname: id.fname + " " + id.mname + " " + id.lname,
                 school_year,
                 semester,
                 week_number,
@@ -628,9 +764,56 @@ exports.setStatusOk = async (req,res) => {
     try {
         const id = req.params.id
 
-        await wfarModel.findByIdAndUpdate(id, {
+        //date and time
+        const today = new Date()
+        const  dd = today.getDate()
+        const mm = today.getMonth() + 1
+        const yyyy = today.getFullYear()
+
+        const dateToday = dd + "/" + mm + "/" + yyyy
+        const time = today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+
+        const ok = await wfarModel.findByIdAndUpdate(id, {
             status: "OK"
         })
+
+        if(ok){
+            await new notifSchema({
+                empId: ok.empId,
+                message: `Your ${ok.week_number} submission for the school year ${ok.school_year}, ${ok.semester} has been set to "OK," with no revisions required.`,
+                time: time,
+                dateToday: dateToday
+            }).save()
+            
+            const emp = await employeeModel.findOne({_id: ok.empId})
+            
+            if (emp) {
+
+                const findReport = await reportSchema.findOne({empId: ok.empId})
+
+                if(findReport){
+                    await reportSchema.findOneAndUpdate({empId: ok.empId},{
+                        handler_id: req.id,
+                        empId: ok.empId,
+                        week_no: ok.week_number,
+                        date: ok.end_date,
+                        fname: emp.fname + " " + emp.mname + " " + emp.lname,
+                        email: emp.email,
+                        status: "OK"
+                    })
+                }else{
+                    await new reportSchema({
+                        handler_id: req.id,
+                        empId: ok.empId,
+                        week_no: ok.week_number,
+                        date: ok.end_date,
+                        fname: emp.fname + " " + emp.mname + " " + emp.lname,
+                        email: emp.email,
+                        status: "OK"
+                    }).save()
+                }
+            }
+        }
 
         return res.status(200).json({ msg: "Successfully updated" })
     } catch (error) {
@@ -642,12 +825,55 @@ exports.setStatusRevise = async (req,res) => {
     try {
         const id = req.params.id
 
-        await wfarModel.findByIdAndUpdate(id,{
+        //date and time
+        const today = new Date()
+        const  dd = today.getDate()
+        const mm = today.getMonth() + 1
+        const yyyy = today.getFullYear()
+
+        const dateToday = dd + "/" + mm + "/" + yyyy
+        const time = today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+
+        const revise = await wfarModel.findByIdAndUpdate(id,{
             status: "With Revisions",
             withRevisionComment: req.body.withRevisionComment
         })
 
+        if(revise){
+            await new notifSchema({
+                empId: revise.empId,
+                message: `Your ${revise.week_number} submission for the school year ${revise.school_year}, ${revise.semester} is set to "With Revisions" with the comment "${req.body.withRevisionComment}". Please resubmit after making the necessary changes.`,
+                time: time,
+                dateToday: dateToday
+            }).save()
+           
+            await reportSchema.findOneAndUpdate({empId: revise.empId},{status: "With Revisions"})
+        }
+
         return res.status(200).json({ msg: "Successfully updated" })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.reports = async (req,res) => {
+    try {
+        const id = req.id
+        const wfar = await reportSchema.find({handler_id: id, status: "OK"});
+
+        return res.status(200).json({wfar})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.deleteAcc = async (req,res) => {
+    try {
+        const id = req.id
+
+        await employeeModel.findByIdAndDelete(id)
+
+        return res.status(200).json({ msg: "Successfully deleted" })
     } catch (error) {
         console.log(error)
     }

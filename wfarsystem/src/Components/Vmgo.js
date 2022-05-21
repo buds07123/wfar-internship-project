@@ -1,6 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+axios.defaults.withCredentials = true
 
 const Vmgo = () => {
+
+  const [data, setData] = useState([])
+
+  const getAllContent = async () => {
+    const res = await axios.get(`http://localhost:4000/api/getAllContent`)
+      .catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    getAllContent().then((data) => {
+      setData(data.content)
+    })
+  }, [])
+
   return (
     <React.Fragment>
       <div className="row">
@@ -120,9 +138,7 @@ const Vmgo = () => {
             <div className="modal-body">
               <div className="row p-3 justify ">
                 <p className="fs-15 ">
-                  Bulacan State University is a progressive knowledge-generating
-                  institution globally recognized for excellent instruction, pioneering
-                  research, and responsive community engagements.
+                  {data.mission}
                 </p>
               </div>
               <div className="modal-footer">
@@ -151,9 +167,7 @@ const Vmgo = () => {
             <div className="modal-body">
               <div className="row p-3 justify ">
                 <p className="fs-15 ">
-                  Bulacan State University exists to provide highly competent, ethical and
-                  service-oriented professionals that contribute to the sustainable
-                  socio-economic growth and development of the nation.
+                  {data.vision}
                 </p>
               </div>
               <div className="modal-footer">
@@ -182,34 +196,7 @@ const Vmgo = () => {
             <div className="modal-body">
               <div className="row p-3 justify ">
                 <span className="fs-15">
-                  <p>
-                    To realize the vision and mission of the University, the College
-                    commits itself to:
-                  </p>
-                  <p>
-                    Produce globally competent, innovative, and ethically responsible
-                    computing and Library and Information Science professionals responsive
-                    to the challenges of society’s changing needs;
-                  </p>
-                  <p>
-                    Prepare students with quality education in information service,
-                    historical and cultural access including current and emerging
-                    technologies through excellent instruction, collaborative research,
-                    innovative production, and community partnerships;
-                  </p>
-                  <p>
-                    Engage in responsive research programs and quality technology-based
-                    extension services delivery with the industry-partners, government
-                    organizations, private sectors, educational institutions and other
-                    collaborators to foster strong international linkages and
-                    partnerships; and
-                  </p>
-                  <p>
-                    Provide faculty and staff development programs to capacitate and
-                    create an avenue to contribute to the emerging social, economic and
-                    environmental issues of the region and encourage students towards
-                    innovation, entrepreneurship, and networking.
-                  </p>
+                  <p>{data.goals}</p>
                 </span>
               </div>
               <div className="modal-footer">
@@ -238,33 +225,7 @@ const Vmgo = () => {
             <div className="modal-body">
               <div className="row p-3 justify ">
                 <span className="fs-15">
-                  <p>The following are the objectives of the BSIT program:</p>
-                  <p>
-                    Apply knowledge and technical competencies in various specialization
-                    tracks of Information Technology aligned to the responsive region’s
-                    specific development needs.
-                  </p>
-                  <p>
-                    Prepare graduates to address various user needs involved in the
-                    selection, development, application, integration, and management of
-                    computing technologies within an organization through critical
-                    thinking and problem solving, being creative, collaborating, and
-                    communication effectively.
-                  </p>
-                  <p>
-                    Design, implement, and evaluate the local, regional, national, and
-                    global impact of information and communications technology through
-                    logical writing, making presentations, conducting collaborative
-                    research, performing innovative production, rendering extension
-                    services, establishing international linkages and partnerships.
-                  </p>
-                  <p>
-                    Immerse and expose in an actual environment in industry, engage in
-                    planning self-learning, and understand professional, ethical, legal,
-                    security and social issues and responsibilities in the utilization of
-                    information technology towards the realization of sustainable
-                    development goals.
-                  </p>
+                  <p>{data.objectives}</p>
                 </span>
               </div>
               <div className="modal-footer">

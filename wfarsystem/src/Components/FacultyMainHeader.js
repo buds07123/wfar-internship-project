@@ -1,9 +1,26 @@
 import React, { useState,useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from 'axios';
+const { io } = require("socket.io-client");
+const socket = io("http://localhost:4000");
 axios.defaults.withCredentials = true
 
 const FacultyMainHeader = () => {
+
+  const [admin,setAdmin] = useState([])
+
+  const adminData = async () => {
+    const res = await axios.get(`http://localhost:4000/api/adminData`).catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    adminData().then((data) => {
+      setAdmin(data.admin)
+    })
+  },[])
+
 
   const [empData, setempData] = useState('')
 
@@ -13,13 +30,44 @@ const FacultyMainHeader = () => {
     return res.data
   }
 
+  //NOTIFICATION
+  const [getNotifs, setNotifs] = useState([])
+
+  const getAllNotif = async (id) => {
+    const res = await axios.get(`http://localhost:4000/api/getAllNotif/${id}`).catch(err => console.log(err))
+
+    return res.data
+  }
+
   useEffect(() => {
-    employeeData().then((data) => setempData(data.emp))
+    employeeData().then((data) => {
+      setempData(data.emp)
+      socket.emit("emp_id", data.emp._id)
+      socket.emit("send_notif", {
+        id: data.emp._id
+      })
+      getAllNotif(data.emp._id).then((data) => {
+        setNotifs(data.notifs)
+      })
+    })
   }, [])
 
-  const logoutButton = async () => {
-    await axios.post('http://localhost:4000/api/logout')
-    window.location.href = '/UserSignIn'
+  useEffect(() => {
+    socket.on("receive_notif", (data) => {
+      console.log("main header")
+      getAllNotif(data.id).then((data) => {
+        setNotifs(data.notifs)
+      })
+    })
+  },[])
+
+
+  const logoutButton = async () => { 
+    let text = "Are you sure you want to logout?";
+    if (window.confirm(text) == true) {
+      await axios.post('http://localhost:4000/api/logout')
+      window.location.href = '/UserSignIn'
+    }
   }
 
   return (
@@ -68,18 +116,26 @@ const FacultyMainHeader = () => {
                   className="widget-media dz-scroll p-3 height250"
                 >
                   <ul className="timeline">
-                    <li>
-                      <div className="timeline-panel">
-                        <div className="media mr-2">
-                          <img alt="image" width={50} src="assets/img/user-sample.png" />
-                        </div>
-                        <div className="media-body">
-                          <h6 className="h6 mb-1">Admin promoted you to Area Chair.</h6>
-                          <small className="d-block">05 April 2022 - 02:26 PM</small>
-                        </div>
-                      </div>
-                    </li>
-                    <li>
+                  
+                    {getNotifs.map((notif) => {
+                      return (
+                        <li>
+                          <div className="timeline-panel">
+                            <div className="media mr-2">
+                              <img alt="image" width={50} src={admin.picture} />
+                            </div>
+                            <div className="media-body">
+                              <h6 className="h6 mb-1">{notif.message}</h6>
+                              <small className="d-block">{notif.time} - {notif.dateToday}</small>
+                            </div>
+                          </div>
+                        </li>
+                      )
+                    })}
+
+                    
+
+                    {/* <li>
                       <div className="timeline-panel">
                         <div className="media mr-2">
                           <img alt="image" width={50} src="assets/img/user-sample.png" />
@@ -92,6 +148,7 @@ const FacultyMainHeader = () => {
                         </div>
                       </div>
                     </li>
+
                     <li>
                       <div className="timeline-panel">
                         <div className="media mr-2">
@@ -104,10 +161,13 @@ const FacultyMainHeader = () => {
                           <small className="d-block">05 April 2022 - 02:26 PM</small>
                         </div>
                       </div>
-                    </li>
+                    </li> */}
+
                   </ul>
                 </div>
-                <Link className="all-notification" to="/FacultyNotifications">
+                <Link className="all-notification" to="/FacultyNotifications" state={{
+                  empIdHeader: empData._id
+                }}>
                   See all notifications <i className="ti-arrow-right" />
                 </Link>
               </div>
@@ -140,7 +200,7 @@ const FacultyMainHeader = () => {
                   </svg>
                   <span className="ml-2">Profile </span>
                 </Link>
-                <button onClick={logoutButton} className="dropdown-item ai-icon">
+                <button type="submit" onClick={logoutButton} className="dropdown-item ai-icon">
                   <svg
                     id="icon-logout"
                     xmlns="http://www.w3.org/2000/svg"

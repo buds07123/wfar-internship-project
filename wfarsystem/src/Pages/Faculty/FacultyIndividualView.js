@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import AttachmentUpload from "../../Components/AttachmentUpload"
 import Act_AttachmentUpload from "../../Components/Act_AttachmentUpload";
 
@@ -23,6 +23,7 @@ const FacultyIndividualView = () => {
   const wfar_id = location.state.wfarId
   const wfar_weekNo = location.state.wfarWeekNo
   const wfar_status = location.state.wfarStatus
+  const wfarDate = location.state.wfarDate
 
   const [updateTable, setUpdateTable] = useState(0)
   const [tableData, setTableData] = useState([])
@@ -320,15 +321,19 @@ const FacultyIndividualView = () => {
                           </g>
                         </svg>
                       </button>
+                      
                       <div className="dropdown-menu">
-                        <button type="button" className="dropdown-item">
-                          <i className="fa fa-print" />
-                          &nbsp;Generate report
-                        </button>
-                        <button type="button" className="dropdown-item">
-                          <i className="fa fa-download" />
-                          &nbsp;Download
-                        </button>
+                        <Link to="/FacultyWfarPrint" state={{
+                          wfar_id: wfar_id,
+                          wfarDate: wfarDate,
+                          wfar_weekNo: wfar_weekNo,
+                          meet_Displayscreenshots: meet_Displayscreenshots
+                        }}>
+                          <button type="button" className="dropdown-item">
+                            <i className="fa fa-print" />
+                            &nbsp;Generate report
+                          </button>
+                        </Link>
                         <button type="submit" className="btn btn-danger dropdown-item" onClick={ArchiveButton}>
                           <i className="fa fa-archive" />
                           &nbsp;Archive
@@ -343,6 +348,7 @@ const FacultyIndividualView = () => {
                           &nbsp;Resubmit
                         </button>
                       </div>
+
                     </div>
                   </div>
                 </div>
@@ -629,7 +635,7 @@ const FacultyIndividualView = () => {
                                 <textarea className="form-control" rows={4} defaultValue={""} onChange={(e) => setActivity(e.target.value)} value={activity} />
                               </div>
                             </div>
-                            <div className="form-group row">
+                            {/* <div className="form-group row">
                               <label className="col-sm-3 col-form-label">Attachments</label>
                               <div className="col-sm-9">
                                 <div className="card shadow-sm w-100">
@@ -639,13 +645,13 @@ const FacultyIndividualView = () => {
                                   <div
                                     className="card-body d-flex flex-wrap align-items-center"
                                     id="container"
-                                  >
+                                  > */}
                                     {/* <AttachmentUpload setEditMeet_screenshots={setEditMeet_screenshots} /> */}
-                                  </div>
+                                  {/* </div>
                                 </div>
                               </div>
-                            </div>
-                            <div className="form-group row">
+                            </div> */}
+                            {/* <div className="form-group row">
                               <label className="col-sm-3 col-form-label" />
                               <div className="col-sm-9">
                                 <div className="card shadow-sm w-100">
@@ -654,12 +660,12 @@ const FacultyIndividualView = () => {
 
                                   </div>
                                   <div className="card-body d-flex flex-wrap justify-content-start"
-                                    id="act-container">
+                                    id="act-container"> */}
                                     {/* <Act_AttachmentUpload setEditAct_screenshots={setEditAct_screenshots} /> */}
-                                  </div>
+                                  {/* </div>
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
                           </div>
                           <div className="new-entry pb-5" />
                           <div className="card-footer">

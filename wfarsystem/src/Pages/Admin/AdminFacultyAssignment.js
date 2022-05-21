@@ -10,6 +10,8 @@ import { render } from "@testing-library/react";
 
 import MUIDataTable from 'mui-datatables'
 import axios from "axios";
+const { io } = require("socket.io-client");
+const socket = io("http://localhost:4000");
 axios.defaults.withCredentials = true
 
 const AdminFacultyAssignment = () => {
@@ -63,7 +65,9 @@ const AdminFacultyAssignment = () => {
 
   //toAssign
   const [hanldeAC_ID,setHandleID] = useState('')
+  const [posAc, setPosAc] = useState('')
   const [hanldeDH_ID,setHandleDH_ID] = useState('')
+  const [posDh,setPosDh] = useState('')
   const [fname,setFName] = useState('')
   const [mname,setMName] = useState('')
   const [lname,setLName] = useState('')
@@ -77,10 +81,15 @@ const AdminFacultyAssignment = () => {
   const editAsignTo = async (e) => {
     e.preventDefault()
 
+    //send notif
+    socket.emit("emp_id", empID)
+    socket.emit("send_notif", { id: empID })
+
 
     if (hanldeAC_ID != "" || hanldeAC_ID == null) {
       //EDIT AC
       const ac_data = {
+        posAc,
         ac_inCharge,
         empID,
         fname,
@@ -92,7 +101,7 @@ const AdminFacultyAssignment = () => {
       await axios.put(`http://localhost:4000/api/editAssignTO/${empID}/${hanldeAC_ID}`, ac_data)
         .then(res => {
           // setUpdateTable(updateTable + 1)
-          window.location.reload(false);
+          window.location.reload(true);
         })
     }
     
@@ -100,6 +109,7 @@ const AdminFacultyAssignment = () => {
     if (hanldeDH_ID != "" || hanldeDH_ID == null) {
       // EDIT DH
       const dh_data = {
+        posDh,
         dh_inCharge,
         empID,
         fname,
@@ -107,13 +117,13 @@ const AdminFacultyAssignment = () => {
         lname,
         position
       }
+      
       await axios.put(`http://localhost:4000/api/editDHAssignTO/${empID}/${hanldeDH_ID}`, dh_data)
         .then(res => {
           // setUpdateTable(updateTable + 1)
-          window.location.reload(false);
+          window.location.reload(true);
         })
     } 
-
   }
 
   const columns = [
@@ -227,7 +237,9 @@ const AdminFacultyAssignment = () => {
                       const index = e.target.selectedIndex;
                       const el = e.target.childNodes[index]
                       const id = el.getAttribute('data-id');  
+                      const pos = el.getAttribute('data-pos');
                       setHandleID(id)
+                      setPosAc(pos)
                     }}
                     defaultValue={ac_inCharge}
                     >
@@ -237,7 +249,7 @@ const AdminFacultyAssignment = () => {
                     {AC.map((ac) => {
                       return (
                         <>
-                          <option data-id={ac._id} value={ac.fname +" "+ ac.mname +" "+ ac.lname}>{ac.fname} {ac.mname} {ac.lname}</option>
+                          <option data-id={ac._id} data-pos={ac.updatedPosition} value={ac.fname +" "+ ac.mname +" "+ ac.lname}>{ac.fname} {ac.mname} {ac.lname}</option>
                         </>
                       )
                     })}
@@ -249,7 +261,9 @@ const AdminFacultyAssignment = () => {
                       const index = e.target.selectedIndex;
                       const el = e.target.childNodes[index]
                       const id = el.getAttribute('data-id');  
+                      const pos = el.getAttribute('data-pos');
                       setHandleDH_ID(id)
+                      setPosDh(pos)
                     }}
                     defaultValue={dh_inCharge}
                   >
@@ -258,7 +272,7 @@ const AdminFacultyAssignment = () => {
                     {DH.map((dh) => {
                       return (
                         <>
-                          <option data-id={dh._id} value={dh.fname +" "+ dh.mname +" "+ dh.lname}>{dh.fname} {dh.mname} {dh.lname}</option>
+                          <option data-id={dh._id} data-pos={dh.updatedPosition} value={dh.fname +" "+ dh.mname +" "+ dh.lname}>{dh.fname} {dh.mname} {dh.lname}</option>
                         </>
                       )
                     })}

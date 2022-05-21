@@ -1,13 +1,75 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import Vmgo from "../../Components/Vmgo";
 import Announcement from "../../Components/Announcement";
 import FeaturesSlider from "../../Components/FeaturesSlider";
-
+import axios from "axios";
+axios.defaults.withCredentials = true
 const AdminDashboard = () => {
+
+   //FACULTY
+   const [data, setData] = useState([])
+   const getData = async () => {
+    const res = await axios.get(`http://localhost:4000/api/getAllFaculty`)
+      .catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    getData().then((data) => {
+      setData(data.empData)
+    })
+  }, [])
+
+  //AREA CHAIR
+  const [AC,setAC] = useState([])
+  const getAllAC = async () => {
+    const res = await axios.get(`http://localhost:4000/api/getAllAC`)
+      .catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    getAllAC().then((data) => {
+      setAC(data.empData)
+    })
+  }, [])
+
+  //DEPARTMENT HEAD
+  const [DH,setDH] = useState([])
+  const getAllDH = async () => {
+    const res = await axios.get(`http://localhost:4000/api/getAllDH`)
+      .catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    getAllDH().then((data) => {
+      setDH(data.empData)
+    })
+  }, [])
+
+  
+  //Display User Data
+  const [sub, setSub] = useState([])
+  const totalSub = async () => {
+    const res = await axios.get(`http://localhost:4000/api/getAllActiveUser`)
+      .catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    totalSub().then((data) => {
+      setSub(data.empData)
+    })
+  }, [])
+  
   return (
     <>
-
       {/* Content */}
       <div className="content-body">
         <div className="sub-header">
@@ -41,7 +103,7 @@ const AdminDashboard = () => {
               <div className="card dash-card">
                 <div className="card-body text-center dash-icons">
                   <img className="mb-3 top-icon" src="assets/img/total-1.png" alt />
-                  <h2 className="text-black mb-2 font-w600">0</h2>
+                  <h2 className="text-black mb-2 font-w600">{data.length}</h2>
                   <p className="mb-0 fs-14">Total Faculty</p>
                 </div>
               </div>
@@ -50,7 +112,7 @@ const AdminDashboard = () => {
               <div className="card dash-card">
                 <div className="card-body text-center dash-icons">
                   <img className="mb-3 top-icon" src="assets/img/total-2.png" alt />
-                  <h2 className="text-black mb-2 font-w600">0</h2>
+                  <h2 className="text-black mb-2 font-w600">{AC.length}</h2>
                   <p className="mb-0 fs-13">Total Area Chair</p>
                 </div>
               </div>
@@ -59,7 +121,7 @@ const AdminDashboard = () => {
               <div className="card dash-card">
                 <div className="card-body text-center dash-icons">
                   <img className="mb-3 top-icon" src="assets/img/total-3.png" alt />
-                  <h2 className="text-black mb-2 font-w600">0</h2>
+                  <h2 className="text-black mb-2 font-w600">{DH.length}</h2>
                   <p className="mb-0 fs-14">Total Department Head</p>
                 </div>
               </div>
@@ -68,7 +130,7 @@ const AdminDashboard = () => {
               <div className="card dash-card">
                 <div className="card-body text-center dash-icons">
                   <img className="mb-3 top-icon" src="assets/img/total-4.png" alt />
-                  <h2 className="text-black mb-2 font-w600">0</h2>
+                  <h2 className="text-black mb-2 font-w600">{sub.length}</h2>
                   <p className="mb-0 fs-14">Total Submissions</p>
                 </div>
               </div>

@@ -122,10 +122,6 @@ const FacultyArchives = () => {
       label: "Status"
     },
     {
-      name: "comments",
-      label: "Comments"
-    },
-    {
       name: "Action",
       label: "Action",
       options: {

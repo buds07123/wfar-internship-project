@@ -111,6 +111,10 @@ const employeeSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    isPass: {
+        type: Boolean,
+        default: false
+    }
 })
 
 module.exports = employee = mongoose.model('employee',employeeSchema)

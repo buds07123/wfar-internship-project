@@ -68,7 +68,7 @@ const AdminSidebar = () => {
                 <span className="nav-text">Profile</span>
               </NavLink>
             </li>
-            <li
+            {/* <li
               className={
                 isSideClicked === "notifications" ? "mm-active" : ""
               }
@@ -83,7 +83,7 @@ const AdminSidebar = () => {
                 <i className="flaticon-381-notification" />
                 <span className="nav-text">Notifications</span>
               </NavLink>
-            </li>
+            </li> */}
             <li className="nav-label">MANAGE</li>
             <li
               className={

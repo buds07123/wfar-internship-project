@@ -1,6 +1,22 @@
-import React from "react";
+import React,{useState,useEffect} from "react";
+import axios from "axios";
+axios.defaults.withCredentials = true
 
 const Announcement = () => {
+
+  const [data, setData] = useState('')
+
+  const getAllContent = async () => {
+    const res = await axios.get(`http://localhost:4000/api/getAllContent`)
+      .catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    getAllContent().then((data) => setData(data.content))
+  }, [])
+
   return (
     <React.Fragment>
       <div className="row">
@@ -26,10 +42,7 @@ const Announcement = () => {
                 <div className="justify">
                   <h2>ANNOUNCEMENT</h2>
                   <span>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    {data.announcement}
                   </span>
                 </div>
               </div>

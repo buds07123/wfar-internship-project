@@ -1,10 +1,27 @@
-import React from "react";
+import React,{useEffect,useState} from "react";
 
 import Vmgo from "../../Components/Vmgo";
 import Announcement from "../../Components/Announcement";
 import FeaturesSlider from "../../Components/FeaturesSlider";
-
+import axios from "axios";
+axios.defaults.withCredentials = true
 const AcdhDashboard = () => {
+
+  const [handleFaculty, setHandleFaculty] = useState([])
+
+  const getFullWfarInfo = async () => {
+    const res = await axios.get(`http://localhost:4000/api/handleFaculty`)
+      .catch(err => console.log(err))
+
+    return res.data
+  }
+
+  useEffect(() => {
+    getFullWfarInfo().then((data) => {
+      setHandleFaculty(data.empData[0].assignTo)
+    })
+  }, [])
+
   return (
     <React.Fragment>
       {/* Content */}
@@ -38,7 +55,7 @@ const AcdhDashboard = () => {
               <div className="card dash-card">
                 <div className="card-body text-center dash-icons">
                   <img className="mb-3 top-icon" src="assets/img/total-1.png" alt />
-                  <h2 className="text-black mb-2 font-w600">0</h2>
+                  <h2 className="text-black mb-2 font-w600">{handleFaculty.length}</h2>
                   <p className="mb-0 fs-14">Total Handles</p>
                 </div>
               </div>

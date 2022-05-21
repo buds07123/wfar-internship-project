@@ -8,64 +8,11 @@ import Wfarbanner from "../../Components/WfarBanner";
 
 import MUIDataTable from 'mui-datatables'
 import axios from "axios";
+const { io } = require("socket.io-client");
+const socket = io("http://localhost:4000");
 axios.defaults.withCredentials = true
 
 const AdminPromoteDemote = () => {
-  // componentDidMount() {
-  //   //initialize datatable
-  //   $("document").ready(function () {
-  //     $("#filterTable").dataTable({
-  //       retrieve: true,
-  //       paging: true,
-  //       searching: true,
-  //       orderCellsTop: true,
-  //       language: {
-  //         paginate: {
-  //           next: '<i class="fa fa-angle-double-right" aria-hidden="true"></i>',
-  //           previous: '<i class="fa fa-angle-double-left" aria-hidden="true"></i>',
-  //         },
-  //       },
-  //     });
-
-
-  //     //Get a reference to the new datatable
-  //     var table = $("#filterTable").DataTable();
-
-  //     //Take the category filter drop down and append it to the datatables_filter div.
-  //     //You can use this same idea to move the filter anywhere withing the datatable that you want.
-  //     $("#filterTable_filter.dataTables_filter").append($("#categoryFilter"));
-
-  //     //Get the column index for the Category column to be used in the method below ($.fn.dataTable.ext.search.push)
-  //     //This tells datatables what column to filter on when a user selects a value from the dropdown.
-  //     //It's important that the text used here (Category) is the same for used in the header of the column to filter
-  //     var categoryIndex = 2;
-  //     $("#filterTable th").each(function (i) {
-  //       if ($($(this)).html() == "Category") {
-  //         categoryIndex = i;
-  //         return false;
-  //       }
-  //     });
-
-  //     //Use the built in datatables API to filter the existing rows by the Category column
-  //     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-  //       var selectedItem = $("#categoryFilter").val();
-  //       var category = data[categoryIndex];
-  //       if (selectedItem === "" || category.includes(selectedItem)) {
-  //         return true;
-  //       }
-  //       return false;
-  //     });
-
-  //     //Set the change event for the Category Filter dropdown to redraw the datatable each time
-  //     //a user selects a new filter.
-  //     $("#categoryFilter").change(function (e) {
-  //       table.draw();
-  //     });
-
-  //     table.draw();
-  //   });
-  // }
-
   const [updateTable, setUpdateTable] = useState(0)
   const [data, setData] = useState([])
 
@@ -96,8 +43,14 @@ const AdminPromoteDemote = () => {
     await axios.post(`http://localhost:4000/api/toPromote/${id}`,formData)
     .then(res => {
       setUpdateTable(updateTable + 1)
+
+      //send notif
+      socket.emit("emp_id", id)
+      socket.emit("send_notif", { id: id })
     })
+
   }
+  
 
   const [idDemoted, setIdDemoted] = useState('')
   const [count, setCount] = useState(0)
@@ -106,6 +59,10 @@ const AdminPromoteDemote = () => {
     await axios.put(`http://localhost:4000/api/toDemote/${idDemoted}`)
     .then(res => {
       setUpdateTable(updateTable + 1)
+      
+      //send notif
+      socket.emit("emp_id", id)
+      socket.emit("send_notif", { id: id })
     })
   }
 

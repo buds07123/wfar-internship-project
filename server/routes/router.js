@@ -31,10 +31,15 @@ const upload = require('../cloudinary/multer')
 //FACULTY/ACDH
 router.post('/register', upload.fields([{name: "emp_picture"}, {name: "signature"}]) , controller.register)
 router.post('/login', controller.login)
+router.post('/forgotPass', controller.forgotPass)
+router.get('/verifyEmail/:id/:token', controller.verifyEmail)
+router.put('/toChangeForgotPass/:id', controller.toChangeForgotPass)
 router.get('/getEmpInfo', verifyToken ,controller.getEmpInfo)  
 router.put('/editProfilePic/:id', upload.single('emp_picture') ,controller.editProfilePic)
 router.put('/editProfile/:id', controller.editProfile)
 router.put('/changePassword/:id', controller.changePassword)
+router.get('/adminData', controller.adminData)
+router.get('/getAllNotif/:id', controller.getAllNotif)
 router.post('/postWfar', upload.fields([{name: "meet_screenshots"}, {name: "act_screenshots"}]) , verifyToken, controller.postWfar )    
 router.get('/findWeekNo/:weekNo', controller.findWeekNo)
 router.get('/getWfarInfo/:schoolyear/:sem', verifyToken, controller.getWfarInfo)
@@ -46,8 +51,10 @@ router.get('/getAllArchiveData', verifyToken, controller.getAllArchiveData)
 router.put('/toRestore/:id', controller.toRestore)
 router.get('/allReqAcc', verifyToken, controller.allReqAcc)
 router.get('/handleFaculty', verifyToken, controller.handleFaculty)
-router.put('/setStatusOk/:id', controller.setStatusOk)
+router.put('/setStatusOk/:id', verifyToken ,controller.setStatusOk)
 router.put('/setStatusRevise/:id', controller.setStatusRevise)
+router.get('/reports', verifyToken ,controller.reports)
+router.delete('/deleteAcc', verifyToken, controller.deleteAcc)
 router.post('/logout',controller.logout)      
 
 
@@ -83,6 +90,11 @@ router.get('/getWfarsPerWeek/:id', adminController.getWfarsPerWeek)
 
 router.post('/newBatch', adminController.newBatch)
 router.get('/getAllBatch', adminController.getAllBatch)
+
+router.put('/postContent', adminController.postContent)
+router.get('/getAllContent', adminController.getAllContent)
+
+router.get('/getAllWfarReport', adminController.getAllWfarReport)
 
 router.post('/adminLogout', adminController.adminLogout)
 

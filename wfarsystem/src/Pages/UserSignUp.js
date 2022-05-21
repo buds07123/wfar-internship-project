@@ -155,7 +155,7 @@ const UserSignUp = () => {
                 <input type="text" onChange={(e) => setName_ex(e.target.value)} value={name_extension} placeholder="Name Extension (Not required)" />
               </div>
               <div class="select">
-                <select class="select textIndent" name="position" id="position" onChange={(e) => setPosition(e.target.value)} defaultValue={position} required>
+                <select className="select-lp select textIndent" name="position" id="position" onChange={(e) => setPosition(e.target.value)} defaultValue={position} required>
                   <option value={position} selected disabled hidden>
                     &#xf2c1; &nbsp;&nbsp; Select your Position
                   </option>
@@ -167,7 +167,7 @@ const UserSignUp = () => {
                 </select>
               </div>
               <div class="select">
-                <select class="select textIndent" name="course" id="course" onChange={(e) => setCourse(e.target.value)} defaultValue={course} required>
+                <select className="select-lp select textIndent" name="course" id="course" onChange={(e) => setCourse(e.target.value)} defaultValue={course} required>
                   <option value={course} selected disabled hidden>
                     &#xf2c1; &nbsp;&nbsp; Select your Department
                   </option>

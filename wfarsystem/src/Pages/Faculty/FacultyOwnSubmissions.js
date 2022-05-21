@@ -79,12 +79,40 @@ const FacultyOwnSubmissions = () => {
           </div>
           {/* School year, Sem Selection */}
           <YearSemSelection setYear={setYear} setSem={setSem} />
+
+          {/* <div className="row page-titles mx-0 mt-4 p-3">
+            <div class="col-sm-12 p-md-0 justify-content-sm-end pt-5 mt-2 mt-sm-0 d-flex">
+              <div class="basic-form ">
+                <form>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <label class="input-group-text">&nbsp;Filter Months:&nbsp;</label>
+                    </div>
+                    <select class="form-control default-select">
+                      <option selected disabled hidden>
+                        Select month
+                      </option>
+                      <option value="1">January</option>
+                      <option value="2">February</option>
+                      <option value="3">March</option>
+                      <option value="4">April</option>
+                      <option value="5">May</option>
+                      <option value="6">June</option>
+                      <option value="7">July</option>
+                      <option value="8">August</option>
+                      <option value="9">September</option>
+                      <option value="10">October</option>
+                      <option value="11">November</option>
+                      <option value="12">December</option>
+                    </select>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div> */}
+
           <div className="row">
-            {/* <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6"> */}
-              {/* Submissioncard Component */}
-              {/* <FacultySubmissionCard /> */}
-            {/* </div> */}
-            {/* Submissioncard Sample without using the Component */}
+            
             {wfarData.map((wfar) => {
               return (
                 <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6">
@@ -109,7 +137,8 @@ const FacultyOwnSubmissions = () => {
                             state={{
                               wfarId: wfar._id,
                               wfarWeekNo: wfar.week_number,
-                              wfarStatus: wfar.status
+                              wfarStatus: wfar.status,
+                              wfarDate: wfar.start_date + " - " + wfar.end_date
                             }}
                             className="btn btn-rounded btn-warning"
                           >
@@ -125,39 +154,7 @@ const FacultyOwnSubmissions = () => {
                 </div>
               )
             })}
-            
-            {/* Submissioncard Sample without using the Component */}
-            {/* <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6">
-              <div className="card">
-                <div className="card-body">
-                  <div className="wfar-entry">
-                    <div className="wfar-img-content">
-                      <img className="img-fluid" src="assets/img/file.png" alt />
-                    </div>
-                    <div className="wfar-content text-center mt-3">
-                      <h4 className="h4">
-                        <Link to="/FacultyIndividualView" className=" text-primary">Week 3</Link>
-                      </h4>
-                      <h4 className="h4">April 4, 2022 to April 8, 2022</h4>
-                      <div className="bootstrap-badge mb-5">
-                        <span className="badge light badge-danger">
-                          Status: With Revisions
-                        </span>
-                      </div>
-                      <Link
-                        to="/FacultyIndividualView"
-                        className="btn btn-rounded btn-warning"
-                      >
-                        <span className="btn-icon-left text-warning">
-                          <i className="fa fa-eye color-warning" />
-                        </span>
-                        View
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div> */}
+      
           </div>
         </div>
       </div>

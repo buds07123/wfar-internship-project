@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodeMailer = require('nodemailer')
@@ -13,6 +12,9 @@ const employeeModel = require('../models/Employee')
 const emailTokenModel = require('../models/EmailToken')
 const wfarModel = require('../models/Wfar')
 const batchModel = require('../models/Admin/Batch')
+const notifSchema = require('../models/Admin/Notification')
+const contentSchema = require('../models/Admin/Content')
+const { find } = require('../models/Employee')
 
 exports.adminReg = async (req,res) => {
     try {
@@ -275,9 +277,27 @@ exports.toPromote = async (req,res) => {
         const id = req.params.id
         const {updatedPosition} = req.body
 
-        await employeeModel.findByIdAndUpdate(id,{
+        //date and time
+        const today = new Date()
+        const  dd = today.getDate()
+        const mm = today.getMonth() + 1
+        const yyyy = today.getFullYear()
+
+        const dateToday = dd + "/" + mm + "/" + yyyy
+        const time = today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+
+        const updatePos = await employeeModel.findByIdAndUpdate(id,{
             updatedPosition
         })
+
+        if(updatePos){
+            await new notifSchema({
+                empId: id,
+                message: "Admin promoted you to " + updatedPosition,
+                time: time,
+                dateToday: dateToday
+            }).save()
+        }
 
         return res.status(200).json({ msg: "Successfully updated" })
     } catch (error) {
@@ -289,6 +309,15 @@ exports.toDemote = async (req,res) => {
     try {
         const id = req.params.id
 
+        //date and time
+        const today = new Date()
+        const  dd = today.getDate()
+        const mm = today.getMonth() + 1
+        const yyyy = today.getFullYear()
+
+        const dateToday = dd + "/" + mm + "/" + yyyy
+        const time = today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+
         const updatePosition = await employeeModel.findByIdAndUpdate(id,{
             updatedPosition: "Faculty"
         })
@@ -297,6 +326,13 @@ exports.toDemote = async (req,res) => {
             await employeeModel.findOneAndUpdate(
                 { _id: id },
                 { $unset: { assignTo: "" } })
+
+            await new notifSchema({
+                empId: id,
+                message: "Admin demoted you to Faculty",
+                time: time,
+                dateToday: dateToday
+            }).save()
         }
 
         return res.status(200).json({ msg: "Successfully updated" })
@@ -339,9 +375,18 @@ exports.getAllDH = async (req,res) => {
 
 exports.editAssignTO = async (req,res) => {
     try {
+        //date and time
+        const today = new Date()
+        const  dd = today.getDate()
+        const mm = today.getMonth() + 1
+        const yyyy = today.getFullYear()
+
+        const dateToday = dd + "/" + mm + "/" + yyyy
+        const time = today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+
         const id = req.params.id
         const handlerAC_ID = req.params.handlerAC_ID || ""
-        const {ac_inCharge,empID,fname,mname,lname,position} = req.body
+        const {posAc,ac_inCharge,empID,fname,mname,lname,position} = req.body
 
         const handlerID = await employeeModel.findOne({_id: id})
 
@@ -365,6 +410,14 @@ exports.editAssignTO = async (req,res) => {
             })
 
             if (updateHandler) {
+
+                //Notification
+                await new notifSchema({
+                    empId: id,
+                    message: "The admin assigned your weekly accomplishment report submissions to be checked by " + posAc +" "+ ac_inCharge,
+                    time: time,
+                    dateToday: dateToday
+                }).save()
 
                 if (handlerID.handlerAC_ID === "") {
                     //AC HANDLER
@@ -454,9 +507,18 @@ exports.editAssignTO = async (req,res) => {
 
 exports.editDHAssignTO = async (req,res) => {
     try {
+        //date and time
+        const today = new Date()
+        const  dd = today.getDate()
+        const mm = today.getMonth() + 1
+        const yyyy = today.getFullYear()
+
+        const dateToday = dd + "/" + mm + "/" + yyyy
+        const time = today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+
         const id = req.params.id
         const handlerDH_ID = req.params.handlerDH_ID || ""
-        const {dh_inCharge,empID,fname,mname,lname,position} = req.body
+        const {posDh,dh_inCharge,empID,fname,mname,lname,position} = req.body
         const handlerID = await employeeModel.findOne({_id: id})
 
         if(dh_inCharge == "None"){
@@ -479,6 +541,14 @@ exports.editDHAssignTO = async (req,res) => {
             })
 
             if(updateHandler){
+
+                //Notification
+                await new notifSchema({
+                    empId: id,
+                    message: "The admin assigned your weekly accomplishment report submissions to be checked by " + posDh +" "+ dh_inCharge,
+                    time: time,
+                    dateToday: dateToday
+                }).save()
 
                 if(handlerID.handlerDH_ID === ""){
                     //DH HANDLER
@@ -611,6 +681,44 @@ exports.getWfarsPerWeek = async (req,res) => {
         return res.status(200).json({ wfar })
     } catch (error) {
         return res.status(404).json({ err: "Wfar id not found" })
+    }
+}
+
+exports.postContent = async (req,res) => {
+    try {
+        const {announcement,vision,mission,goals,objectives} = req.body
+
+        await contentSchema.findByIdAndUpdate("62869b6e682ebd90940a1d31",{
+            announcement,
+            vision,
+            mission,
+            goals,
+            objectives
+        })
+
+        return res.status(200).json({ msg: "Successfully updated" })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.getAllContent = async (req,res) => {
+    try {
+        const content = await contentSchema.findById("62869b6e682ebd90940a1d31")
+
+        return res.status(200).json({ content })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.getAllWfarReport = async (req,res) => {
+    try {
+        const wfars = await wfarModel.find()
+
+        return res.status(200).json({ wfars })
+    } catch (error) {
+        console.log(error)
     }
 }
 

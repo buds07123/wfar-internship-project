@@ -9,6 +9,8 @@ import { render } from "@testing-library/react";
 
 import MUIDataTable from 'mui-datatables'
 import axios from "axios";
+const { io } = require("socket.io-client");
+const socket = io("http://localhost:4000");
 axios.defaults.withCredentials = true
 
 const AcdhHandleWfarView = () => {
@@ -68,6 +70,7 @@ const AcdhHandleWfarView = () => {
 
   const location = useLocation()
   const wfarId = location.state.wfarId
+  const empID = location.state.empID
   const weekNo = location.state.weekNo
   const status = location.state.status
 
@@ -203,7 +206,11 @@ const AcdhHandleWfarView = () => {
     e.preventDefault()
 
     await axios.put(`http://localhost:4000/api/setStatusOk/${wfarId}`)
-    // .then(res => window.)
+    .then(res => {
+      //send notif
+      socket.emit("emp_id", empID)
+      socket.emit("send_notif", { id: empID })
+    })
   }
 
   const [withRevisionComment,setWithRevisionComment] = useState('')
@@ -216,6 +223,11 @@ const AcdhHandleWfarView = () => {
     }
 
     await axios.put(`http://localhost:4000/api/setStatusRevise/${wfarId}`,formData)
+    .then(e => {
+      //send notif
+      socket.emit("emp_id", empID)
+      socket.emit("send_notif", { id: empID })
+    })
   }
 
   return (

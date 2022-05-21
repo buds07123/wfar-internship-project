@@ -53,6 +53,16 @@ const FacultyProfile = () => {
     
   },[count])
 
+  const deleteAcc = async () => {
+    let text = "Are you sure you want to delete this account?";
+    if (window.confirm(text) == true) {
+      await axios.delete('http://localhost:4000/api/deleteAcc')
+      .then(res => {
+        window.location.href = '/UserSignIn'
+      })
+    }
+  }
+
   return (
     <React.Fragment>
       {/* Content */}
@@ -99,7 +109,7 @@ const FacultyProfile = () => {
                         <p>{empData.position}</p>
                       </div>
                       <div className="ml-auto">
-                        <button className="btn btn-danger">
+                        <button className="btn btn-danger" onClick={deleteAcc}>
                           <i className="flaticon-381-trash-1" />
                           &nbsp;Delete Account
                         </button>

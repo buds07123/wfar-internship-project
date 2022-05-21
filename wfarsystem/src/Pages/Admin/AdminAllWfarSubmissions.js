@@ -74,8 +74,10 @@ const AdminAllWfarSubmissions = () => {
               </button>
             </div>
           </div>
+
+          <br></br>
           {/* School year, Sem Selection */}
-          <YearSemSelection />
+          {/* <YearSemSelection /> */}
           <div className="row">
             {/* <div className="col-xl-3 col-xxl-4 col-lg-6 col-sm-6"> */}
               {/* Admin Submissioncard Component */}

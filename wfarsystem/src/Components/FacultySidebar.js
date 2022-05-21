@@ -99,8 +99,13 @@ const FacultySidebar = () => {
               <NavLink exact to="/FacultyNotifications"
                 className="ai-icon"
                 aria-expanded="false"
+                state={{
+                  empId: empData._id
+                }}
                 onClick={
-                  () => { setSideClicked("notifications") }
+                  () => { 
+                    setSideClicked("notifications") 
+                  }
                 }
               >
                 <i className="flaticon-381-notification" />
