@@ -14,7 +14,6 @@ const UserSignIn = () => {
     }, 1000);
   }
 
-  const [email, setEmail] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -23,18 +22,24 @@ const UserSignIn = () => {
 
     try {
       const loginData = {
-        email,
+        username,
         password
       }
 
+      // if (email === loginData.email || email === loginData.username) {
+      //   await axios.post("http://localhost:4000/api/login", loginData)
+      //   window.location.href = '/Faculty'
+      // }
+
       await axios.post("http://localhost:4000/api/login", loginData)
       window.location.href = '/Faculty'
+
     } catch (error) {
       console.log(error)
       if (error.response.data.err === "invalid password") {
         alert('Invalid Password.')
       } else if (error.response.data.err === "The email or username is not existing") {
-        alert('The email is not existing.')
+        alert('The email or username is not existing.')
       } else if (error.response.data.err === "Verify your account first in your email account") {
         alert('Your account is not yet activated. Please check your email for verification.')
       }
@@ -100,7 +105,7 @@ const UserSignIn = () => {
               </p>
               <div className="input-field">
                 <i className="fas fa-envelope"></i>
-                <input type="email" onChange={(e) => setEmail(e.target.value)} value={email} placeholder="Email address" required />
+                <input type="text" onChange={(e) => setUsername(e.target.value)} value={username} placeholder="Email address or Username" required />
               </div>
               <div className="input-field">
                 <i className="fas fa-lock"></i>

@@ -78,7 +78,7 @@ const FacultyOwnSubmissions = () => {
             </div>
           </div>
           {/* School year, Sem Selection */}
-          <YearSemSelection setYear={setYear} setSem={setSem} />
+          <YearSemSelection setYear={setYear} year={year} setSem={setSem} sem={sem} />
 
           {/* <div className="row page-titles mx-0 mt-4 p-3">
             <div class="col-sm-12 p-md-0 justify-content-sm-end pt-5 mt-2 mt-sm-0 d-flex">
@@ -128,7 +128,8 @@ const FacultyOwnSubmissions = () => {
                           </h4>
                           <h4 className="h4"> {wfar.start_date} to {wfar.end_date}</h4>
                           <div className="bootstrap-badge mb-5">
-                            <span className="badge light badge-info">
+                            <span className={wfar.status === "OK" ? "badge light badge-success" :
+                              wfar.status === "With Revisions" ? "badge light badge-danger" : "badge light badge-info"}>
                               Status: {wfar.status}
                             </span>
                           </div>
@@ -138,7 +139,8 @@ const FacultyOwnSubmissions = () => {
                               wfarId: wfar._id,
                               wfarWeekNo: wfar.week_number,
                               wfarStatus: wfar.status,
-                              wfarDate: wfar.start_date + " - " + wfar.end_date
+                              wfarDate: wfar.start_date + " - " + wfar.end_date,
+                              withRevisionComment: wfar.withRevisionComment
                             }}
                             className="btn btn-rounded btn-warning"
                           >

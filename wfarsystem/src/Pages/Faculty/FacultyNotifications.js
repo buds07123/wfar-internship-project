@@ -95,11 +95,11 @@ const FacultyNotifications = () => {
                       <div className="notification">
                         <div className="media pt-3 pb-3">
                           <div className="user-media mr-3 rounded-circle">
-                            <img src={admin.picture} alt />
+                            <img src={notif.picture} alt />
                           </div>
                           <div className="media-body">
-                            <h5 className="h5 m-b-5">{admin.first_name} {admin.middle_name} {admin.last_name}</h5>
-                            <p className="mb-0 text-info">Admin</p>
+                            <h5 className="h5 m-b-5">{notif.name}</h5>
+                            <p className="mb-0 text-info">{notif.position}</p>
                             <p className="mb-0">{notif.time} | {notif.dateToday}</p>
                           </div>
                         </div>

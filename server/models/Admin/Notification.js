@@ -1,6 +1,18 @@
 const mongoose = require('mongoose')
 
 const notifSchema = new mongoose.Schema({
+    picture:{
+        type: String,
+        required: false
+    },
+    name:{
+        type: String,
+        required: false
+    },
+    position:{
+        type: String,
+        required: false
+    },
     empId:{
         type: String,
         required: false

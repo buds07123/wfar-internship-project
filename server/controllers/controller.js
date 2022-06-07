@@ -91,9 +91,10 @@ exports.register = async (req, res) => {
 exports.login = async (req, res, next) => {
     try {
         //get user data
-        const { email, password } = req.body
+        const { username, password } = req.body
 
-        const employee = await employeeModel.findOne({ email })
+        const employee = await employeeModel.findOne({$or: [
+            {email: username},{username: username }]})
 
         if (!employee) {
             return res.status(406).json({
@@ -760,8 +761,29 @@ exports.handleFaculty = async (req,res) => {
 }
 
 //Set Status Wfar 
+exports.setStatusForChecking = async (req,res) => {
+    try {
+        const id = req.params.id
+
+        const setForChecking = await wfarModel.findByIdAndUpdate(id,{
+            status: "For Checking",
+            withRevisionComment: req.body.resubComment
+        })
+
+        if(setForChecking){
+            await reportSchema.findOneAndDelete({wfar_id: setForChecking._id})
+        }
+
+        return res.status(200).json({ msg: "Successfully updated." })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 exports.setStatusOk = async (req,res) => {
     try {
+        const empData = await employeeModel.findOne({_id: req.id})
+
         const id = req.params.id
 
         //date and time
@@ -774,11 +796,15 @@ exports.setStatusOk = async (req,res) => {
         const time = today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
 
         const ok = await wfarModel.findByIdAndUpdate(id, {
-            status: "OK"
+            status: "OK",
+            withRevisionComment: ""
         })
 
         if(ok){
             await new notifSchema({
+                picture: empData.emp_picture,
+                name: empData.fname + " " + empData.mname + " " + empData.lname,
+                position: empData.updatedPosition,
                 empId: ok.empId,
                 message: `Your ${ok.week_number} submission for the school year ${ok.school_year}, ${ok.semester} has been set to "OK," with no revisions required.`,
                 time: time,
@@ -789,29 +815,40 @@ exports.setStatusOk = async (req,res) => {
             
             if (emp) {
 
-                const findReport = await reportSchema.findOne({empId: ok.empId})
+                await new reportSchema({
+                    wfar_id: ok._id,
+                    handler_id: req.id,
+                    empId: ok.empId,
+                    week_no: ok.week_number,
+                    date: ok.end_date,
+                    fname: emp.fname + " " + emp.mname + " " + emp.lname,
+                    email: emp.email,
+                    status: "OK"
+                }).save()
 
-                if(findReport){
-                    await reportSchema.findOneAndUpdate({empId: ok.empId},{
-                        handler_id: req.id,
-                        empId: ok.empId,
-                        week_no: ok.week_number,
-                        date: ok.end_date,
-                        fname: emp.fname + " " + emp.mname + " " + emp.lname,
-                        email: emp.email,
-                        status: "OK"
-                    })
-                }else{
-                    await new reportSchema({
-                        handler_id: req.id,
-                        empId: ok.empId,
-                        week_no: ok.week_number,
-                        date: ok.end_date,
-                        fname: emp.fname + " " + emp.mname + " " + emp.lname,
-                        email: emp.email,
-                        status: "OK"
-                    }).save()
-                }
+                // const findReport = await reportSchema.findOne({empId: ok.empId,week_no: ok.week_number})
+
+                // if(findReport){
+                //     await reportSchema.findOneAndUpdate({empId: ok.empId},{
+                //         handler_id: req.id,
+                //         empId: ok.empId,
+                //         week_no: ok.week_number,
+                //         date: ok.end_date,
+                //         fname: emp.fname + " " + emp.mname + " " + emp.lname,
+                //         email: emp.email,
+                //         status: "OK"
+                //     })
+                // }else{
+                //     await new reportSchema({
+                //         handler_id: req.id,
+                //         empId: ok.empId,
+                //         week_no: ok.week_number,
+                //         date: ok.end_date,
+                //         fname: emp.fname + " " + emp.mname + " " + emp.lname,
+                //         email: emp.email,
+                //         status: "OK"
+                //     }).save()
+                // }
             }
         }
 
@@ -823,6 +860,9 @@ exports.setStatusOk = async (req,res) => {
 
 exports.setStatusRevise = async (req,res) => {
     try {
+
+        const emp = await employeeModel.findOne({_id: req.id})
+
         const id = req.params.id
 
         //date and time
@@ -841,13 +881,16 @@ exports.setStatusRevise = async (req,res) => {
 
         if(revise){
             await new notifSchema({
+                picture: emp.emp_picture,
+                name: emp.fname + " " + emp.mname + " " + emp.lname,
+                position: emp.updatedPosition,
                 empId: revise.empId,
                 message: `Your ${revise.week_number} submission for the school year ${revise.school_year}, ${revise.semester} is set to "With Revisions" with the comment "${req.body.withRevisionComment}". Please resubmit after making the necessary changes.`,
                 time: time,
                 dateToday: dateToday
             }).save()
            
-            await reportSchema.findOneAndUpdate({empId: revise.empId},{status: "With Revisions"})
+            await reportSchema.findOneAndDelete({wfar_id: revise._id})
         }
 
         return res.status(200).json({ msg: "Successfully updated" })

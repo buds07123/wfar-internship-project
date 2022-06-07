@@ -135,7 +135,8 @@ const AcdhIndividualHandle = () => {
                 wfarId: data[dataIndex]._id,
                 empID: data[dataIndex].empId,
                 weekNo: data[dataIndex].week_number,
-                status: data[dataIndex].status
+                status: data[dataIndex].status,
+                withRevisionComment: data[dataIndex].withRevisionComment
               }}>
                 <button
                   type="button"

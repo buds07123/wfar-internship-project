@@ -3,7 +3,7 @@ import React,{useState,useEffect} from "react";
 import axios from "axios";
 axios.defaults.withCredentials = true
 
-const YearSemSelection = ({setYear,setSem}) => {
+const YearSemSelection = ({setYear,year,setSem,sem}) => {
 
   const [data, setData] = useState([])
 
@@ -25,7 +25,7 @@ const YearSemSelection = ({setYear,setSem}) => {
     <React.Fragment>
       <div className="row page-titles mx-0 mt-4 bg-white p-3">
         <div className="col-sm-12 p-md-0 justify-content-sm-center mt-2 mt-sm-0 d-flex">
-          <h3 className="h3 p-2">SCHOOL YEAR: 2021-2022 - First Semester</h3>
+          <h3 className="h3 p-2">SCHOOL YEAR: {year} - {sem}</h3>
         </div>
         <div className="col-sm-6 p-md-0">
           <div className="col-sm-12 p-md-0 justify-content-sm-start mt-2 mt-sm-0 d-flex">

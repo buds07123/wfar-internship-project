@@ -291,7 +291,13 @@ exports.toPromote = async (req,res) => {
         })
 
         if(updatePos){
+
+            const admin = await adminModel.findOne()
+
             await new notifSchema({
+                picture: admin.picture,
+                name: admin.first_name + " " + admin.middle_name + " " + admin.last_name,
+                position: "Admin",
                 empId: id,
                 message: "Admin promoted you to " + updatedPosition,
                 time: time,
@@ -327,7 +333,12 @@ exports.toDemote = async (req,res) => {
                 { _id: id },
                 { $unset: { assignTo: "" } })
 
+            const admin = await adminModel.findOne()
+
             await new notifSchema({
+                picture: admin.picture,
+                name: admin.first_name + " " + admin.middle_name + " " + admin.last_name,
+                position: "Admin",
                 empId: id,
                 message: "Admin demoted you to Faculty",
                 time: time,
@@ -411,8 +422,13 @@ exports.editAssignTO = async (req,res) => {
 
             if (updateHandler) {
 
+                const admin = await adminModel.findOne()
+
                 //Notification
                 await new notifSchema({
+                    picture: admin.picture,
+                    name: admin.first_name + " " + admin.middle_name + " " + admin.last_name,
+                    position: "Admin",
                     empId: id,
                     message: "The admin assigned your weekly accomplishment report submissions to be checked by " + posAc +" "+ ac_inCharge,
                     time: time,
@@ -541,9 +557,13 @@ exports.editDHAssignTO = async (req,res) => {
             })
 
             if(updateHandler){
+                const admin = await adminModel.findOne()
 
                 //Notification
                 await new notifSchema({
+                    picture: admin.picture,
+                    name: admin.first_name + " " + admin.middle_name + " " + admin.last_name,
+                    position: "Admin",
                     empId: id,
                     message: "The admin assigned your weekly accomplishment report submissions to be checked by " + posDh +" "+ dh_inCharge,
                     time: time,

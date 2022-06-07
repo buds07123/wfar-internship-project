@@ -73,6 +73,7 @@ const AcdhHandleWfarView = () => {
   const empID = location.state.empID
   const weekNo = location.state.weekNo
   const status = location.state.status
+  const withRevisionComments = location.state.withRevisionComment
 
 
   //Display Wfar Data
@@ -499,7 +500,7 @@ const AcdhHandleWfarView = () => {
                         name="comment"
                         placeholder="Comment"
                         id="comment"
-                        defaultValue={""}
+                        defaultValue={withRevisionComments}
                         readOnly
                       />
                     </div>

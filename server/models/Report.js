@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const reportSchema = new mongoose.Schema({
+    wfar_id: {
+        type: String,
+        required: false
+    },
     handler_id: {
         type: String,
         required: false

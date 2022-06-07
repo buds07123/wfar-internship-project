@@ -122,7 +122,7 @@ const FacultyMainHeader = () => {
                         <li>
                           <div className="timeline-panel">
                             <div className="media mr-2">
-                              <img alt="image" width={50} src={admin.picture} />
+                              <img alt="image" width={50} src={notif.picture} />
                             </div>
                             <div className="media-body">
                               <h6 className="h6 mb-1">{notif.message}</h6>

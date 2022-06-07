@@ -24,6 +24,7 @@ const FacultyIndividualView = () => {
   const wfar_weekNo = location.state.wfarWeekNo
   const wfar_status = location.state.wfarStatus
   const wfarDate = location.state.wfarDate
+  const withRevisionComment = location.state.withRevisionComment
 
   const [updateTable, setUpdateTable] = useState(0)
   const [tableData, setTableData] = useState([])
@@ -276,6 +277,22 @@ const FacultyIndividualView = () => {
       })
   }
 
+  //Resubmit Button
+  const [resubComment,setResubComment] = useState('')
+
+  const reSubmitBtn = async (e) => {
+    e.preventDefault()
+
+    const data = {
+      resubComment
+    }
+
+    await axios.put(`http://localhost:4000/api/setStatusForPending/${wfar_id}`,data)
+      .then(res => {
+        alert(res.data.msg)
+      })
+  }
+
   return (
     <React.Fragment>
       {/* Content */}
@@ -383,7 +400,7 @@ const FacultyIndividualView = () => {
                         placeholder="Comment"
                         id="comment"
                         readOnly
-                        defaultValue={""}
+                        defaultValue={withRevisionComment}
                       />
                     </div>
                   </div>
@@ -700,7 +717,7 @@ const FacultyIndividualView = () => {
               </button>
             </div>
             <div className="modal-body">
-              <form>
+              <form onSubmit={reSubmitBtn}>
                 <h6 className="fs-14">
                   Please indicate the revision (changes/enhancement) done for this
                   submission.
@@ -709,7 +726,8 @@ const FacultyIndividualView = () => {
                   className="form-control"
                   rows={4}
                   placeholder="Comment"
-                  defaultValue={""}
+                  onChange={(e) => setResubComment(e.target.value)}
+                  value={resubComment}
                 />
                 <div className="modal-footer">
                   <button
